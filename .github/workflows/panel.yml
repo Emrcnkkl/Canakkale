@@ -30,6 +30,7 @@ jobs:
 
       - name: Gizli veri deposunu al
         if: env.HAS_DATA_TOKEN == 'true'
+        continue-on-error: true   # depo boşsa ya da token okuyamıyorsa bu depodaki data.js ile devam et
         uses: actions/checkout@v4
         with:
           repository: Emrcnkkl/panel-veri
