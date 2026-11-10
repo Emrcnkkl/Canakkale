@@ -396,7 +396,7 @@ function renderToday(){
     ...watching.map(s=>`<div class="row"><span class="chip acc">Dizi</span><div class="main"><div class="t">${esc(s.title)}</div><div class="d">${s.season?`S${s.season} · `:""}${s.episode?`${s.episode}. bölüm`:""}</div></div></div>`),
     ...D.trainings.filter(t=>(t.progress||0)<100).slice(0,3).map(t=>`<div class="row"><span class="chip good">Eğitim</span><div class="main"><div class="t">${esc(t.title)}</div>${bar(t.progress||0,"good")}</div><span class="mono d">${Math.round(t.progress||0)}%</span></div>`)].join("");
   const fm = currentMonth();
-  const finBody = fm? (()=>{const inc=sum(fm.income), exp=sum(fm.expenses), sub=subMonthly(); return `<div class="kpis"><div><div class="label">Kalan</div><div class="big money ${inc-exp<0?"neg":""}">${tl(inc-exp)}</div></div><div><div class="label">Harcanan</div><div class="big money">${tl(exp)}</div></div></div>${bar(pct(exp,inc), exp>inc?"crit":"")}<div class="d" style="margin-top:6px;color:var(--muted);font-size:12px">${monthName(fm.id)} · gelirin %${Math.round(pct(exp,inc))}'i harcandı${sub?` · abonelikler ${tl(sub)}/ay`:""}</div>`;})()
+  const finBody = fm? (()=>{const inc=sum(fm.income), exp=sum(monthExp(fm)), sub=subMonthly(); return `<div class="kpis"><div><div class="label">Kalan</div><div class="big money ${inc-exp<0?"neg":""}">${tl(inc-exp)}</div></div><div><div class="label">Harcanan</div><div class="big money">${tl(exp)}</div></div></div>${bar(pct(exp,inc), exp>inc?"crit":"")}<div class="d" style="margin-top:6px;color:var(--muted);font-size:12px">${monthName(fm.id)} · bütçenin %${Math.round(pct(exp,inc))}'i harcandı${sub?` · abonelikler ${tl(sub)}/ay`:""}</div>`;})()
     : empty("Bu ayın bütçesi girilmedi.");
   const wk=D.gcal.filter(g=>{const n=daysUntil(g.date);return n!=null&&n>=0&&n<=7;});
   const gBody = wk.length? `<div class="list">${wk.map(g=>`<div class="row"><span class="mono" style="width:86px;flex:none;font-size:12.5px">${esc(fmtD(g.date,{day:"numeric",month:"short",weekday:"short"}))}</span><div class="main"><div class="t">${esc(g.title)}</div><div class="d">${esc([g.time&&(g.endTime?g.time+"–"+g.endTime:g.time),g.location].filter(Boolean).join(" · "))}</div></div>${countdown(daysUntil(g.date))}</div>`).join("")}</div>`
@@ -605,7 +605,17 @@ document.getElementById("v-kitapfilm").addEventListener("click",e=>{const b=e.ta
 const sum = a => (a||[]).reduce((s,x)=>s+(+x.amount||0),0);
 const monthName = id => { const m=/^(\d{4})-(\d{2})/.exec(id||""); return m? new Date(+m[1],+m[2]-1,1).toLocaleDateString("tr-TR",{month:"long",year:"numeric"}) : id; };
 let selMonth=null;
-function months(){ return [...D.finance].sort((a,b)=>b.id.localeCompare(a.id)); }
+function months(){
+  const ms=[...D.finance], cur=ymd(new Date()).slice(0,7), b=+D.settings.monthlyBudget;
+  if(b && !ms.some(m=>m.id===cur)) ms.push({id:cur,income:[{label:"Aylık bütçe",amount:b}],expenses:[]});
+  return ms.sort((a,b)=>b.id.localeCompare(a.id));
+}
+// Ayın giderleri + (girilmemişse) aboneliklerin aylık toplamı otomatik
+function monthExp(m){
+  const ex=[...(m.expenses||[])], sm=subMonthly();
+  if(sm>0 && !ex.some(e=>/abonelik/i.test(e.category||""))) ex.push({label:"Abonelikler (otomatik)",amount:Math.round(sm*100)/100,category:"Abonelik"});
+  return ex;
+}
 function currentMonth(){ const ms=months(); const cur=ymd(new Date()).slice(0,7); return ms.find(m=>m.id===cur) || ms[0] || null; }
 function subMonthly(){ return D.subscriptions.reduce((s,x)=>s+((+x.amount||0)/(x.cycle==="yillik"?12:1)),0); }
 function nextRenew(s){
@@ -618,11 +628,11 @@ function renderFinance(){
   const ms=months(); const m = ms.find(x=>x.id===selMonth) || currentMonth();
   let monthBody;
   if(m){
-    const inc=sum(m.income), exp=sum(m.expenses), net=inc-exp;
-    const cats={}; (m.expenses||[]).forEach(e=>{const k=e.category||"Diğer"; cats[k]=(cats[k]||0)+(+e.amount||0);});
+    const inc=sum(m.income), exp=sum(monthExp(m)), net=inc-exp;
+    const cats={}; monthExp(m).forEach(e=>{const k=e.category||"Diğer"; cats[k]=(cats[k]||0)+(+e.amount||0);});
     const cs=Object.entries(cats).sort((a,b)=>b[1]-a[1]); const mx=cs.length?cs[0][1]:0;
     monthBody = `${ms.length>1?`<div class="seg" id="mseg">${ms.slice(0,6).map(x=>`<button aria-pressed="${x.id===m.id}" data-v="${esc(x.id)}">${esc(monthName(x.id))}</button>`).join("")}</div>`:""}
-      <div class="kpis" style="margin-bottom:14px"><div><div class="label">Gelir</div><div class="big money pos">${tl(inc)}</div></div><div><div class="label">Gider</div><div class="big money">${tl(exp)}</div></div><div><div class="label">Kalan</div><div class="big money ${net<0?"neg":""}">${tl(net)}</div></div><div><div class="label">Tasarruf oranı</div><div class="big">${inc?Math.round(net/inc*100):0}%</div></div></div>
+      <div class="kpis" style="margin-bottom:14px"><div><div class="label">Bütçe</div><div class="big money pos">${tl(inc)}</div></div><div><div class="label">Gider</div><div class="big money">${tl(exp)}</div></div><div><div class="label">Kalan</div><div class="big money ${net<0?"neg":""}">${tl(net)}</div></div><div><div class="label">Tasarruf oranı</div><div class="big">${inc?Math.round(net/inc*100):0}%</div></div></div>
       ${cs.length?`<div class="label" style="margin-bottom:4px">Kategoriye göre</div>${cs.map(([k,v])=>`<div class="catrow"><span>${esc(k)}</span>${bar(pct(v,mx))}<span class="mono" style="text-align:right">${tl(v)}</span></div>`).join("")}`:""}`;
   } else monthBody = empty("Bu ayın gelir ve giderleri girilmedi.","Kasım: burs 4.000, harçlık 6.000 · kira 3.500, yemek 2.800, ulaşım 900, kitap 450");
   const subs=[...D.subscriptions].map(s=>({...s,nx:nextRenew(s)})).sort((a,b)=>(a.nx||"9").localeCompare(b.nx||"9"));
@@ -631,7 +641,7 @@ function renderFinance(){
   const sav=D.savings;
   const savL = sav.length? `<div class="list">${sav.map(s=>{const p=pct(+s.current||0,+s.target||0);return `<div class="row"><div class="main"><div class="t">${esc(s.title)}</div><div style="margin-top:6px">${bar(p,p>=100?"good":"mark")}</div><div class="d mono" style="margin-top:3px">${tl(s.current)} / ${tl(s.target)}${s.deadline?" · "+esc(fmtD(s.deadline,{month:"long",year:"numeric"})):""}</div></div><span class="big" style="font-size:18px">${Math.round(p)}%</span></div>`;}).join("")}</div>`
     : empty("Birikim hedefi yok.","Yeni bilgisayar: 40.000 ₺ hedef, 14.000 ₺ biriktirdim");
-  const exp = m? (m.expenses||[]) : [];
+  const exp = m? monthExp(m) : [];
   const expT = exp.length? `<div class="tbl"><table><thead><tr><th>Kalem</th><th>Kategori</th><th style="text-align:right">Tutar</th></tr></thead><tbody>${[...exp].sort((a,b)=>(+b.amount||0)-(+a.amount||0)).map(e=>`<tr><td>${esc(e.label)}</td><td><span class="chip">${esc(e.category||"Diğer")}</span></td><td class="mono" style="text-align:right">${tl(e.amount)}</td></tr>`).join("")}</tbody></table></div>` : "";
   document.getElementById("v-finans").innerHTML = `<div class="grid">
     ${card("s8",m?monthName(m.id):"Bu ay",monthBody)}
