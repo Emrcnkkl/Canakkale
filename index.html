@@ -124,6 +124,7 @@ h1{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1.1;l
 .blk{position:absolute;left:4px;right:4px;border-radius:7px;padding:5px 7px;overflow:hidden;font-size:12px;line-height:1.3;
   background:hsl(var(--h) 55% var(--blockL));color:hsl(var(--h) 45% var(--blockInk));border-left:3px solid hsl(var(--h) 55% 50%)}
 .blk b{display:block;font-weight:600}
+.blk.short{padding-block:3px;font-size:11.5px}
 .nowline{position:absolute;left:0;right:0;height:2px;background:var(--crit);z-index:2}
 .nowline::before{content:"";position:absolute;left:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--crit)}
 /* Kanban */
@@ -166,6 +167,20 @@ h1{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1.1;l
   background:radial-gradient(closest-side,var(--surface) 76%,transparent 77%),conic-gradient(var(--accent) calc(var(--p)*1%),var(--surface-2) 0)}
 .ring b{font-family:var(--f-display);font-size:22px}
 .flex{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12.5px;color:var(--muted);margin-bottom:12px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend .pill{width:14px;height:14px;padding:0}
+.legend b{color:var(--ink);font-weight:500}
+.curr{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:10px}
+.sem{background:var(--surface-2);border-radius:10px;padding:10px 12px}
+.semh{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:8px;color:var(--muted)}
+.semh b{color:var(--ink);font-weight:600}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{display:inline-block;font-family:var(--f-mono);font-size:12px;padding:4px 8px;border-radius:7px;border:1px solid transparent;white-space:nowrap}
+.p-pass{background:var(--good-soft);color:var(--good);border-color:color-mix(in srgb,var(--good) 30%,transparent)}
+.p-take{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+.p-rem{background:var(--surface);color:var(--ink);border-color:var(--line)}
+.p-elec{background:transparent;color:var(--mark);border:1px dashed var(--mark)}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;text-align:left;padding:0 10px 8px 0}
 td{padding:9px 10px 9px 0;border-top:1px solid var(--line);vertical-align:middle}
@@ -270,7 +285,7 @@ const empty = (txt, ex) => `<div class="empty">${txt}${ex?`<q>${esc(ex)}</q>`:""
 const card = (cls,title,body,meta="") => `<div class="card ${cls}"><h2>${title}${meta?`<span class="meta">${meta}</span>`:""}</h2>${body}</div>`;
 
 /* ---------- Veri ---------- */
-const COLS = ["courses","exams","assignments","calendar","remaining","trainings","certificates","goals","applications","projects","books","films","series","finance","subscriptions","savings","spotify","links","dates"];
+const COLS = ["courses","exams","assignments","calendar","remaining","trainings","certificates","goals","applications","projects","books","films","series","finance","subscriptions","savings","spotify","links","dates","curriculum"];
 // Veriler data.js'teki window.PANEL_DATA'dan gelir (Claude günceller).
 const RAW = window.PANEL_DATA || {};
 const LIVE = {settings: RAW.settings || {}};
@@ -299,7 +314,7 @@ function renderToday(){
   const tlist = ses.length ? `<div class="list tl">${ses.map(({c,s})=>{
       const st=mins(s.start), en=mins(s.end); const state = m>=st&&m<en?"now":m>=en?"past":"";
       const left = state==="now"? `<span class="chip acc">Şimdi · ${en-m} dk kaldı</span>` : state===""? `<span class="chip">${st-m<120? (st-m)+" dk sonra":""}</span>`:"";
-      return `<div class="row ${state}"><span class="sw" style="--h:${hue(c.code||c.name)}"></span><span class="time mono">${esc(s.start)}–${esc(s.end)}</span><div class="main"><div class="t">${esc(c.name)}</div><div class="d">${esc([s.room||c.room,c.teacher].filter(Boolean).join(" · "))}</div></div>${left.includes("></span>")?"":left}</div>`;
+      return `<div class="row ${state}"><span class="sw" style="--h:${hue(c.code||c.name)}"></span><span class="time mono">${esc(s.start)}–${esc(s.end)}</span><div class="main"><div class="t">${esc(c.code?c.code+" · "+c.name:c.name)}${s.type?` <span class="chip mark">${esc(s.type)}</span>`:""}</div><div class="d">${esc([s.room||c.room,c.teacher].filter(Boolean).join(" · "))}</div></div>${left.includes("></span>")?"":left}</div>`;
     }).join("")}</div>`
     : D.courses.length ? empty("Bugün ders yok.") : empty("Ders programın henüz yok. Bana şöyle yazabilirsin:","Pazartesi 09:00–11:50 Mikroiktisat (ECON201), B-204, Doç. Dr. Yılmaz");
   const up=upcoming(21);
@@ -337,14 +352,15 @@ function renderSchool(){
   if(all.length){
     const maxDay = Math.max(5,...all.map(x=>+x.s.day||1));
     let lo=Math.min(...all.map(x=>mins(x.s.start))), hi=Math.max(...all.map(x=>mins(x.s.end)));
-    lo=Math.floor(lo/60)*60; hi=Math.ceil(hi/60)*60; const PX=0.9, H=(hi-lo)*PX;
+    lo=Math.floor(lo/60)*60; hi=Math.ceil(hi/60)*60; const PX=1.15, H=(hi-lo)*PX;
     const hours=[]; for(let t=lo;t<=hi;t+=60) hours.push(t);
     const lines = hours.map(t=>`<div class="wline" style="top:${(t-lo)*PX}px"></div>`).join("");
     let html = `<div></div>`+Array.from({length:maxDay},(_,i)=>`<div class="wh ${i+1===td?"today":""}">${DAYS[i+1]}</div>`).join("");
     html += `<div class="wtimes" style="height:${H}px">${hours.map(t=>`<span class="mono" style="top:${(t-lo)*PX}px">${pad(t/60)}:00</span>`).join("")}</div>`;
     for(let day=1;day<=maxDay;day++){
       const blocks = all.filter(x=>+x.s.day===day).map(({c,s})=>{const st=mins(s.start),en=mins(s.end);
-        return `<div class="blk" style="--h:${hue(c.code||c.name)};top:${(st-lo)*PX+1}px;height:${(en-st)*PX-2}px" title="${esc(c.name)} ${esc(s.start)}–${esc(s.end)}"><b>${esc(c.code||c.name)}</b>${esc(s.room||c.room||"")}<br><span class="mono">${esc(s.start)}–${esc(s.end)}</span></div>`;}).join("");
+        const short=en-st<60;
+        return `<div class="blk${short?" short":""}" style="--h:${hue(c.code||c.name)};top:${(st-lo)*PX+1}px;height:${(en-st)*PX-2}px" title="${esc(c.name)} ${esc(s.start)}–${esc(s.end)}"><b>${esc(c.code||c.name)}${s.type?" · "+esc(s.type):""}</b>${esc(s.room||c.room||"")}${short?" · ":(s.room||c.room?"<br>":"")}<span class="mono">${esc(s.start)}–${esc(s.end)}</span></div>`;}).join("");
       const nl = day===td && m>=lo && m<=hi ? `<div class="nowline" style="top:${(m-lo)*PX}px"></div>`:"";
       html += `<div class="wcol ${day===td?"today":""}" style="height:${H}px">${lines}${blocks}${nl}</div>`;
     }
@@ -358,22 +374,31 @@ function renderSchool(){
   const asg=[...D.assignments].sort((a,b)=>(a.status==="teslim")-(b.status==="teslim")||(a.due||"").localeCompare(b.due||""));
   const ST={yapilacak:["Yapılacak",""],devam:["Devam ediyor","acc"],teslim:["Teslim edildi","good"]};
   const asgL = asg.length? `<div class="list">${asg.map(a=>{const s=ST[a.status]||ST.yapilacak;return `<div class="row" style="${a.status==="teslim"?"opacity:.55":""}"><span class="sw" style="--h:${hue(a.course)}"></span><div class="main"><div class="t">${esc(a.title)}</div><div class="d">${esc(a.course||"")} · ${esc(fmtDW(a.due))}${a.time?" "+esc(a.time):""}</div></div><span class="chip ${s[1]}">${s[0]}</span>${a.status!=="teslim"?countdown(daysUntil(a.due)):""}</div>`;}).join("")}</div>`
-    : empty("Ödev ya da proje teslimi yok.","ECON201 problem seti 3, teslim 22 Kasım 23:59");
+    : empty("Ödev ya da proje teslimi yok.","CMPE220 ödev 3, teslim 22 Kasım 23:59");
 
-  const cal=[...D.calendar].sort((a,b)=>(a.date||"").localeCompare(b.date||""));
+  const calAll=[...D.calendar].sort((a,b)=>(a.date||"").localeCompare(b.date||""));
+  const firstOpen=calAll.findIndex(c=>daysUntil(c.end||c.date)>=0);
+  const calFrom=firstOpen<0?Math.max(0,calAll.length-3):Math.max(0,firstOpen-1), cal=calAll.slice(calFrom,calFrom+9), calMore=calAll.length-calFrom-cal.length;
   let nextMarked=false;
   const calL = cal.length? `<div class="cal">${cal.map(c=>{const n=daysUntil(c.end||c.date); const done=n<0; let cls=done?"done":""; if(!done&&!nextMarked){cls="next";nextMarked=true;}
-      return `<div class="row ${cls}"><div class="main"><div class="t">${esc(c.title)}</div><div class="d mono">${esc(fmtD(c.date))}${c.end?" – "+esc(fmtD(c.end)):""}</div></div>${!done?countdown(daysUntil(c.date)):""}</div>`;}).join("")}</div>`
+      const ongoing=!done&&daysUntil(c.date)<0;
+      return `<div class="row ${cls}"><div class="main"><div class="t">${esc(c.title)}</div><div class="d mono">${esc(fmtD(c.date))}${c.end?" – "+esc(fmtD(c.end)):""}</div></div>${ongoing?`<span class="chip warn">Sürüyor</span>`:!done?countdown(daysUntil(c.date)):""}</div>`;}).join("")}</div>`
+  + (calMore>0?`<div class="d" style="margin-top:8px;font-size:12px;color:var(--muted)">+${calMore} madde daha · ${esc(fmtD(calAll[calAll.length-1].date,{month:"long",year:"numeric"}))}'e kadar</div>`:"")
     : empty("Akademik takvim boş. Okulun takvim sayfasının linkini ya da tarihleri gönderebilirsin.");
 
   const st=D.settings, total=+st.totalEcts||0, earned=+st.earnedEcts||0, current=D.courses.reduce((a,c)=>a+(+c.ects||0),0);
+  const curr=D.curriculum||[], CS={passed:["Geçti","p-pass"],taking:["Bu dönem","p-take"],remaining:["Alınacak","p-rem"],elective:["Seçmeli (boş)","p-elec"]};
+  const allC=curr.flatMap(x=>x.courses||[]), cnt=k=>allC.filter(c=>c.status===k).length;
+  const kpi=(l,v,u="")=>`<div><div class="label">${l}</div><div class="big">${v}${u?`<span style="font-size:14px;color:var(--muted)"> ${u}</span>`:""}</div></div>`;
+  const head = total? `<div class="flex"><div class="ring" style="--p:${pct(earned,total).toFixed(1)}"><b class="mono">${Math.round(pct(earned,total))}%</b></div>
+      <div class="kpis" style="flex:1">${kpi("Tamamlanan",num(earned),"/ "+num(total)+" AKTS")}${current?kpi("Bu dönem",num(current),"AKTS"):""}${current?kpi("Dönem sonunda",num(earned+current),"AKTS"):""}
+      ${st.gpa?kpi("GANO",esc(st.gpa),"/ 4"):""}${st.gradTerm?kpi("Hedef mezuniyet",esc(st.gradTerm)):""}</div></div>` : "";
+  const table = curr.length? `<div class="legend">${Object.entries(CS).map(([k,[l,c]])=>`<span><i class="pill ${c}"></i>${l} <b class="mono">${cnt(k)}</b></span>`).join("")}</div>
+      <div class="curr">${curr.map(x=>{const cs=x.courses||[], done=cs.filter(c=>c.status==="passed").length;
+        return `<div class="sem"><div class="semh"><b>${esc(x.semester)}. yarıyıl</b><span class="mono">${done}/${cs.length}</span></div><div class="pills">${cs.map(c=>{const t=CS[c.status]||CS.remaining;return `<span class="pill ${t[1]}" title="${esc(t[0])}${c.note?" · "+esc(c.note):""}">${esc(c.code)}</span>`;}).join("")}</div></div>`;}).join("")}</div>` : "";
   const rem=[...D.remaining].sort((a,b)=>String(a.term||"").localeCompare(String(b.term||"")));
-  const grad = total? `<div class="flex"><div class="ring" style="--p:${pct(earned,total).toFixed(1)}"><b class="mono">${Math.round(pct(earned,total))}%</b></div>
-      <div class="kpis" style="flex:1"><div><div class="label">Tamamlanan</div><div class="big">${num(earned)}<span style="font-size:14px;color:var(--muted)"> / ${num(total)} AKTS</span></div></div>
-      ${current?`<div><div class="label">Bu dönem</div><div class="big">${num(current)}<span style="font-size:14px;color:var(--muted)"> AKTS</span></div></div>`:""}
-      ${st.gpa?`<div><div class="label">GANO</div><div class="big">${esc(st.gpa)}<span style="font-size:14px;color:var(--muted)"> / 4</span></div></div>`:""}
-      ${st.gradTerm?`<div><div class="label">Hedef mezuniyet</div><div class="big" style="font-size:20px">${esc(st.gradTerm)}</div></div>`:""}</div></div>
-      ${rem.length?`<div class="label" style="margin:16px 0 4px">Kalan dersler</div><div class="list">${rem.map(r=>`<div class="row"><div class="main"><div class="t">${esc(r.name)}</div><div class="d">${esc(r.term||"")}</div></div><span class="chip ${r.type==="zorunlu"?"warn":""}">${esc(r.type||"")}</span><span class="mono d">${r.ects?esc(r.ects)+" AKTS":""}</span></div>`).join("")}</div>`:""}`
+  const remL = rem.length? `<div class="label" style="margin:16px 0 4px">Kalan dersler</div><div class="list">${rem.map(r=>`<div class="row"><div class="main"><div class="t">${esc(r.name)}</div><div class="d">${esc(r.term||"")}</div></div><span class="chip ${r.type==="zorunlu"?"warn":""}">${esc(r.type||"")}</span><span class="mono d">${r.ects?esc(r.ects)+" AKTS":""}</span></div>`).join("")}</div>` : "";
+  const grad = (head||table||remL)? head+(table?`<div style="margin-top:18px">${table}</div>`:"")+remL
     : empty("Mezuniyet bilgisi yok. Toplam ve tamamladığın AKTS'yi, GANO'nu ve kalan zorunlu dersleri yazarsan burası dolar.");
 
   const absent = D.courses.filter(c=>c.absenceLimit);
@@ -386,9 +411,9 @@ function renderSchool(){
     ${card("s12","Haftalık program",week, D.courses.length? `${D.courses.length} ders`:"")}
     ${card("s7","Sınavlar",examT)}
     ${card("s5","Ödev ve proje teslimleri",asgL)}
-    ${card("s7","Mezuniyet yolu",grad)}
-    ${card("s5","Akademik takvim",calL)}
+    ${card("s5","Akademik takvim",calL,"Boğaziçi")}
     ${card("s7","Dersler ve materyaller",courseList)}
+    ${card("s12","Mezuniyet yolu",grad,curr.length?"Bilgisayar Mühendisliği müfredatı":"")}
     ${card("s5","Devamsızlık",absL)}
   </div>`;
   const soon = D.exams.filter(e=>{const n=daysUntil(e.date);return n!=null&&n>=0&&n<=7;}).length + D.assignments.filter(a=>a.status!=="teslim"&&(()=>{const n=daysUntil(a.due);return n!=null&&n>=0&&n<=7;})()).length;
@@ -503,7 +528,7 @@ function renderFinance(){
       ${cs.length?`<div class="label" style="margin-bottom:4px">Kategoriye göre</div>${cs.map(([k,v])=>`<div class="catrow"><span>${esc(k)}</span>${bar(pct(v,mx))}<span class="mono" style="text-align:right">${tl(v)}</span></div>`).join("")}`:""}`;
   } else monthBody = empty("Bu ayın gelir ve giderleri girilmedi.","Kasım: burs 4.000, harçlık 6.000 · kira 3.500, yemek 2.800, ulaşım 900, kitap 450");
   const subs=[...D.subscriptions].map(s=>({...s,nx:nextRenew(s)})).sort((a,b)=>(a.nx||"9").localeCompare(b.nx||"9"));
-  const subsL = subs.length? `<div class="list">${subs.map(s=>`<div class="row"><span class="fav" style="--h:${hue(s.name)}">${esc((s.name||"?")[0].toUpperCase())}</span><div class="main"><div class="t">${esc(s.name)}</div><div class="d">${s.cycle==="yillik"?"Yıllık":"Aylık"}${s.nx?" · yenileme "+esc(fmtD(s.nx)):""}</div></div>${s.nx?countdown(daysUntil(s.nx)):""}<span class="mono">${tl(s.amount)}</span></div>`).join("")}</div>`
+  const subsL = subs.length? `<div class="list">${subs.map(s=>`<div class="row"><span class="fav" style="--h:${hue(s.name)}">${esc((s.name||"?")[0].toUpperCase())}</span><div class="main"><div class="t">${esc(s.name)}</div><div class="d">${esc(s.note||"")}${s.note?" · ":""}${s.cycle==="yillik"?"Yıllık":"Aylık"}${s.nx?" · yenileme "+esc(fmtD(s.nx)):" · yenileme günü ?"}</div></div>${s.nx?countdown(daysUntil(s.nx)):""}<span class="mono">${s.amount!=null?tl(s.amount):`<span style="color:var(--muted)">tutar ?</span>`}</span></div>`).join("")}</div>`
     : empty("Abonelik yok.","Spotify Öğrenci 39 ₺ her ayın 5'i · Netflix 229 ₺ her ayın 18'i");
   const sav=D.savings;
   const savL = sav.length? `<div class="list">${sav.map(s=>{const p=pct(+s.current||0,+s.target||0);return `<div class="row"><div class="main"><div class="t">${esc(s.title)}</div><div style="margin-top:6px">${bar(p,p>=100?"good":"mark")}</div><div class="d mono" style="margin-top:3px">${tl(s.current)} / ${tl(s.target)}${s.deadline?" · "+esc(fmtD(s.deadline,{month:"long",year:"numeric"})):""}</div></div><span class="big" style="font-size:18px">${Math.round(p)}%</span></div>`;}).join("")}</div>`
@@ -512,7 +537,7 @@ function renderFinance(){
   const expT = exp.length? `<div class="tbl"><table><thead><tr><th>Kalem</th><th>Kategori</th><th style="text-align:right">Tutar</th></tr></thead><tbody>${[...exp].sort((a,b)=>(+b.amount||0)-(+a.amount||0)).map(e=>`<tr><td>${esc(e.label)}</td><td><span class="chip">${esc(e.category||"Diğer")}</span></td><td class="mono" style="text-align:right">${tl(e.amount)}</td></tr>`).join("")}</tbody></table></div>` : "";
   document.getElementById("v-finans").innerHTML = `<div class="grid">
     ${card("s8",m?monthName(m.id):"Bu ay",monthBody)}
-    ${card("s4","Abonelikler",subsL,subs.length?`${tl(subMonthly())}/ay`:"")}
+    ${card("s4","Abonelikler",subsL,subs.some(x=>x.amount!=null)?`${tl(subMonthly())}/ay`:"")}
     ${card("s6","Birikim hedefleri",savL)}
     ${card("s6","Giderler",expT||empty("Gider kalemi yok."),m?esc(monthName(m.id)):"")}
   </div>`;
