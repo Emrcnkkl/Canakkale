@@ -103,14 +103,17 @@ h1{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1.1;l
 .row.now{background:var(--accent-soft);border-radius:9px;padding-inline:10px;margin-inline:-10px;border-top-color:transparent}
 .row.past{opacity:.5}
 /* Spotify kutucukları */
-.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
-.tile{position:relative;display:flex;flex-direction:column;justify-content:flex-end;min-height:92px;padding:12px;border-radius:10px;text-decoration:none;color:#fff;
-  background:linear-gradient(145deg,hsl(var(--h) 55% 38%),hsl(calc(var(--h) + 40) 50% 22%));overflow:hidden}
-.tile b{font-size:13.5px;line-height:1.25;overflow-wrap:anywhere}
-.tile span{font-size:11.5px;opacity:.8}
-.tile .play{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.92);display:grid;place-items:center;transition:transform .15s}
-.tile .play svg{width:12px;height:12px;fill:#111;margin-left:2px}
-.tile:hover .play{transform:scale(1.1)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.tile{display:flex;align-items:center;gap:12px;padding:8px 10px 8px 8px;border-radius:12px;text-decoration:none;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);min-width:0;transition:border-color .15s}
+.tile:hover{border-color:var(--accent)}
+.cover{width:52px;height:52px;border-radius:7px;object-fit:cover;flex:none;display:block;box-shadow:0 1px 3px rgba(0,0,0,.18)}
+.cover.ph{background:linear-gradient(145deg,hsl(var(--h) 55% 45%),hsl(calc(var(--h) + 40) 50% 25%))}
+.tile .tx{display:flex;flex-direction:column;min-width:0;flex:1}
+.tile .tx b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tile .tx span{font-size:12px;color:var(--muted)}
+.tile .play{width:30px;height:30px;border-radius:50%;background:var(--good);display:grid;place-items:center;flex:none;opacity:.85;transition:transform .15s,opacity .15s}
+.tile .play svg{width:11px;height:11px;fill:#fff;margin-left:2px}
+.tile:hover .play{opacity:1;transform:scale(1.08)}
 .tile:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 /* Haftalık program */
 .week-wrap{overflow-x:auto}
@@ -168,6 +171,12 @@ h1{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1.1;l
   background:radial-gradient(closest-side,var(--surface) 76%,transparent 77%),conic-gradient(var(--accent) calc(var(--p)*1%),var(--surface-2) 0)}
 .ring b{font-family:var(--f-display);font-size:22px}
 .flex{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.chip.sp{min-width:74px;text-align:center}
+.chip.sp.sm{min-width:0;width:24px;padding:3px 0}
+.fb-fut,.fb-bas,.fb-vol{background:#0E1E5B;color:#FFED00}
+.fb-bas{background:#FFED00;color:#0E1E5B}
+.fb-vol{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px #0E1E5B}
+.fbcard{background:linear-gradient(120deg,color-mix(in srgb,#0E1E5B 10%,var(--surface)),var(--surface) 60%)}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12.5px;color:var(--muted);margin-bottom:12px}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .legend .pill{width:14px;height:14px;padding:0}
@@ -247,6 +256,7 @@ td{padding:9px 10px 9px 0;border-top:1px solid var(--line);vertical-align:middle
     <section class="view" id="v-kariyer" hidden></section>
     <section class="view" id="v-projeler" hidden></section>
     <section class="view" id="v-kitapfilm" hidden></section>
+    <section class="view" id="v-fb" hidden></section>
     <section class="view" id="v-finans" hidden></section>
   </main>
 </div>
@@ -265,9 +275,10 @@ const ICON = {
   kariyer:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/>',
   projeler:'<path d="M4 6h6l2 2h8v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6Z"/>',
   kitapfilm:'<path d="M4 5a2 2 0 0 1 2-2h5v18H6a2 2 0 0 1-2-2V5Z"/><rect x="13" y="7" width="8" height="12" rx="1.5"/><path d="m16 11 3 2-3 2v-4Z"/>',
+  fb:'<circle cx="12" cy="12" r="9"/><path d="m12 7 4 3-1.5 4.5h-5L8 10l4-3Z"/><path d="M12 3v4M21 10l-5 0M3 10h5M7 20l2.5-5.5M17 20l-2.5-5.5"/>',
   finans:'<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 15h2"/>'
 };
-const TABS = [["bugun","Bugün"],["okul","Okul"],["gelisim","Gelişim"],["kariyer","Kariyer"],["projeler","Projeler"],["kitapfilm","Kitap & Film"],["finans","Finans"]];
+const TABS = [["bugun","Bugün"],["okul","Okul"],["gelisim","Gelişim"],["kariyer","Kariyer"],["projeler","Projeler"],["kitapfilm","Kitap & Film"],["fb","Fenerbahçe"],["finans","Finans"]];
 const tabsEl = document.getElementById("tabs");
 tabsEl.innerHTML = TABS.map(([id,l]) => `<button class="tab" role="tab" id="t-${id}" aria-controls="v-${id}" data-tab="${id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICON[id]}</svg>${l}<span class="cnt" id="c-${id}"></span></button>`).join("");
 function showTab(id){
@@ -312,7 +323,7 @@ const empty = (txt, ex) => `<div class="empty">${txt}${ex?`<q>${esc(ex)}</q>`:""
 const card = (cls,title,body,meta="") => `<div class="card ${cls}"><h2>${title}${meta?`<span class="meta">${meta}</span>`:""}</h2>${body}</div>`;
 
 /* ---------- Veri ---------- */
-const COLS = ["courses","exams","assignments","calendar","remaining","trainings","certificates","goals","applications","projects","books","films","series","finance","subscriptions","savings","spotify","links","dates","curriculum","gcal","moodle"];
+const COLS = ["courses","exams","assignments","calendar","remaining","trainings","certificates","goals","applications","projects","books","films","series","finance","subscriptions","savings","spotify","links","dates","curriculum","gcal","moodle","fb"];
 // Veriler data.js'teki window.PANEL_DATA'dan gelir (Claude günceller).
 const RAW = window.PANEL_DATA || {};
 const LIVE = {settings: RAW.settings || {}};
@@ -352,7 +363,7 @@ function renderToday(){
   const up=upcoming(21);
   const ulist = up.length? `<div class="list">${up.slice(0,8).map(i=>`<div class="row"><div class="main"><div class="t">${esc(i.title)}</div><div class="d">${esc(fmtDW(i.date))}${i.d?" · "+esc(i.d):""}</div></div><span class="chip ${i.cls}">${esc(i.kind)}</span>${countdown(daysUntil(i.date))}</div>`).join("")}</div>`
     : empty("Önümüzdeki 3 haftada sınav, teslim ya da önemli bir gün yok.");
-  const tiles = D.spotify.length? `<div class="tiles">${D.spotify.map(s=>`<a class="tile" style="--h:${hue(s.title)}" href="${url(s.url)}" target="_blank" rel="noopener"><span class="play"><svg viewBox="0 0 12 12"><path d="M2 1l9 5-9 5z"/></svg></span><b>${esc(s.title)}</b><span>${esc(s.subtitle||s.kind||"Spotify")}</span></a>`).join("")}</div>`
+  const tiles = D.spotify.length? `<div class="tiles">${D.spotify.map(s=>`<a class="tile" href="${url(s.url)}" target="_blank" rel="noopener" title="${esc(s.title)} — Spotify'da aç">${s.cover?`<img class="cover" src="${esc(s.cover)}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'cover ph',style:'--h:${hue(s.title)}'}))">`:`<span class="cover ph" style="--h:${hue(s.title)}"></span>`}<span class="tx"><b>${esc(s.title)}</b><span>${esc(s.subtitle||"Çalma listesi")}</span></span><span class="play"><svg viewBox="0 0 12 12"><path d="M2 1l9 5-9 5z"/></svg></span></a>`).join("")}</div>`
     : empty("Hızlı çal listen boş. Spotify'da çalma listesinde Paylaş → Bağlantıyı kopyala ile linki bana gönder.");
   const links = D.links.length? `<div class="links">${D.links.map(l=>`<a href="${url(l.url)}" target="_blank" rel="noopener"><span class="fav" style="--h:${hue(l.title)}">${esc((l.title||"?")[0].toUpperCase())}</span>${esc(l.title)}</a>`).join("")}</div>` : empty("Bağlantı yok.");
   // küçük durum özetleri
@@ -375,10 +386,37 @@ function renderToday(){
     ${card("s6","Devam edenler",nowBits?`<div class="list">${nowBits}</div>`:empty("Okuduğun kitap, izlediğin dizi ya da süren bir eğitim yok."))}
     ${card("s6","Bağlantılar",links)}
     ${card("s12","Bu hafta takvimin",gBody,"Google Takvim")}
+    ${D.fb.length?card("s12","Fenerbahçe",`<div class="list">${D.fb.filter(m=>!m.score&&daysUntil(m.date)>=0).slice(0,5).map(m=>fbRow(m)).join("")}</div>`,`<a class="lnk" href="#fb">Tüm fikstür</a>`):""}
   </div>`;
   const urgent = up.filter(i=>daysUntil(i.date)<=3 && (i.kind!=="Takvim")).length;
   document.getElementById("c-bugun").textContent = urgent? urgent : "";
 }
+
+/* ---------- Fenerbahçe ---------- */
+const SPORT={Futbol:"fb-fut",Basketbol:"fb-bas",Voleybol:"fb-vol"};
+function fbResult(m){ if(!m.score) return ""; const [a,b]=m.score.split("-").map(Number); if(isNaN(a)||isNaN(b)) return "";
+  const r=a>b?["G","good"]:a<b?["M","crit"]:["B","warn"]; return `<span class="chip ${r[1]}" title="${r[0]==="G"?"Galibiyet":r[0]==="M"?"Mağlubiyet":"Beraberlik"}">${r[0]} ${esc(m.score)}</span>`; }
+function fbRow(m,showDate=true){
+  if(!showDate) return `<div class="row"><span class="chip sp sm ${SPORT[m.sport]||""}" title="${esc(m.sport)}">${esc(m.sport[0])}</span><div class="main"><div class="t">${esc(m.opp)}</div><div class="d">${esc(fmtD(m.date,{day:"numeric",month:"short"}))} · ${esc(m.comp)} · ${m.home?"İç saha":"Deplasman"}</div></div>${fbResult(m)}</div>`;
+  return `<div class="row"><span class="chip sp ${SPORT[m.sport]||""}">${esc(m.sport)}</span>${showDate?`<span class="mono" style="width:112px;flex:none;font-size:12.5px">${esc(fmtD(m.date,{day:"numeric",month:"short",weekday:"short"}))}${m.time?" "+esc(m.time):""}</span>`:""}<div class="main"><div class="t">${m.home?`Fenerbahçe – ${esc(m.opp)}`:`${esc(m.opp)} – Fenerbahçe`}</div><div class="d">${esc(m.comp)} · ${m.home?"İç saha":"Deplasman"}</div></div>${m.score?fbResult(m):countdown(daysUntil(m.date))}</div>`;
+}
+let fbFilter="Tümü";
+function renderFB(){
+  const all=D.fb, f=fbFilter==="Tümü"?all:all.filter(m=>m.sport===fbFilter);
+  const up=f.filter(m=>!m.score&&daysUntil(m.date)>=0), past=f.filter(m=>m.score).slice(-8).reverse();
+  const nextBy=["Futbol","Basketbol","Voleybol"].map(sp=>[sp,all.find(m=>m.sport===sp&&!m.score&&daysUntil(m.date)>=0)]);
+  const kp=`<div class="kpis">${nextBy.map(([sp,m])=>`<div><div class="label">${sp} · sıradaki</div>${m?`<div class="big" style="font-size:20px">${esc(m.opp)}</div><div class="d" style="font-size:12.5px;color:var(--muted)">${esc(fmtD(m.date,{day:"numeric",month:"long",weekday:"long"}))}${m.time?" · "+esc(m.time):""} · ${m.home?"İç saha":"Deplasman"}</div>`:`<div class="d" style="color:var(--muted)">Maç bilgisi yok</div>`}</div>`).join("")}</div>`;
+  let lastM="", upL="";
+  const upMore=Math.max(0,up.length-30);
+  up.slice(0,30).forEach(m=>{const mm=m.date.slice(0,7); if(mm!==lastM){ upL+=`<div class="label" style="margin:${lastM?"14px":"0"} 0 2px">${esc(monthName(mm))}</div>`; lastM=mm;} upL+=fbRow(m);});
+  const seg=`<div class="seg" id="fbseg">${["Tümü","Futbol","Basketbol","Voleybol"].map(x=>`<button aria-pressed="${fbFilter===x}" data-v="${x}">${x}</button>`).join("")}</div>`;
+  document.getElementById("v-fb").innerHTML = all.length? `<div class="grid">
+    ${card("s12 fbcard","Sıradaki maçlar",kp)}
+    ${card("s7",`Fikstür`,seg+(up.length?`<div class="list">${upL}</div>${upMore?`<div class="d" style="margin-top:10px;font-size:12px;color:var(--muted)">+${upMore} maç daha</div>`:""}`:empty("Bu filtrede yaklaşan maç yok.")),"Türkiye saati")}
+    ${card("s5","Son sonuçlar",past.length?`<div class="list">${past.map(m=>fbRow(m,false)).join("")}</div>`:empty("Sonuç yok."))}
+  </div>` : `<div class="card">${empty("Maç takvimi henüz yüklenmedi. Site her 3 saatte bir güncellenir.")}</div>`;
+}
+document.getElementById("v-fb").addEventListener("click",e=>{const b=e.target.closest("#fbseg button"); if(!b) return; fbFilter=b.dataset.v; renderFB();});
 
 /* ---------- Okul ---------- */
 function renderSchool(){
@@ -607,7 +645,7 @@ document.getElementById("demoBar").addEventListener("click",e=>{
 });
 
 let raf=0;
-function renderAll(){ raf=0; renderTop(); renderToday(); renderSchool(); renderGrowth(); renderCareer(); renderProjects(); renderMedia(); renderFinance(); }
+function renderAll(){ raf=0; renderTop(); renderToday(); renderSchool(); renderGrowth(); renderCareer(); renderProjects(); renderMedia(); renderFB(); renderFinance(); }
 const schedule = () => { if(!raf) raf=requestAnimationFrame(renderAll); };
 setInterval(schedule, 60000);
 

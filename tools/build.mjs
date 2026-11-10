@@ -156,6 +156,114 @@ if (process.env.MOODLE_ICS_URL) {
     console.log(`Moodle: ${data.moodle.length} etkinlik`);
   } catch (e) { sync.moodle = "hata"; console.warn("Moodle takvimi alınamadı:", e.message); }
 }
+/* ---------- Fenerbahçe maç takvimi ---------- */
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const getJSON = async (u, tries = 3) => {
+  for (let i = 0; ; i++) {
+    try {
+      const r = await fetch(u, { headers: { "user-agent": "panel-build/1.0" }, signal: AbortSignal.timeout(30000) });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return await r.json();
+    } catch (e) { if (i >= tries) throw e; await sleep(/429/.test(e.message) ? 45000 : 3000); }
+  }
+};
+const trTime = iso => { const d = new Date(new Date(iso).getTime() + TR_OFFSET); return { date: ymd(d), time: hm(d) }; };
+const COMP = { "Turkish Super Lig": "Süper Lig", "UEFA Champions League": "Şampiyonlar Ligi", "UEFA Europa League": "Avrupa Ligi",
+  "UEFA Conference League": "Konferans Ligi", "UEFA Europa Conference League": "Konferans Ligi", "Turkish Cup": "Türkiye Kupası",
+  "Turkish Super Cup": "Süper Kupa", "Turkish Basketbol Super Ligi": "Basketbol Süper Ligi", "EuroLeague Basketball": "EuroLeague",
+  "Turkish Volleyball League": "Efeler Ligi" };
+const comp = n => COMP[n] || n || "";
+const season = () => { const y = nowTR.getUTCFullYear(), m = nowTR.getUTCMonth() + 1; return m >= 7 ? [y, y + 1] : [y - 1, y]; };
+const FROM = today - 21 * 864e5, TO = today + 120 * 864e5;
+const inWin = date => { const t = Date.parse(date + "T00:00:00Z"); return t >= FROM && t <= TO; };
+
+async function fbFootball() {
+  const out = [];
+  for (const q of ["?fixture=true", ""]) {
+    const d = await getJSON("https://site.api.espn.com/apis/site/v2/sports/soccer/all/teams/436/schedule" + q);
+    for (const e of d.events || []) {
+      const c = e.competitions?.[0]; if (!c) continue;
+      const me = c.competitors.find(x => x.team?.id === "436"), op = c.competitors.find(x => x.team?.id !== "436");
+      if (!me || !op) continue;
+      const { date, time } = trTime(e.date);
+      const done = c.status?.type?.completed;
+      const sc = x => x.score?.displayValue ?? x.score?.value ?? x.score;
+      out.push({ sport: "Futbol", comp: comp(e.league?.name || c.league?.name), date, time: done ? undefined : time,
+        opp: op.team.displayName, home: me.homeAway === "home", score: done ? `${sc(me)}-${sc(op)}` : undefined });
+    }
+  }
+  return out;
+}
+
+async function fbEuroleague() {
+  const [y] = season();
+  const d = await getJSON(`https://api-live.euroleague.net/v2/competitions/E/seasons/E${y}/games?teamCode=ULK`);
+  return (d.data || []).map(g => {
+    const home = g.local?.club?.code === "ULK", me = home ? g.local : g.road, op = home ? g.road : g.local;
+    const { date, time } = trTime(g.utcDate);
+    return { sport: "Basketbol", comp: "EuroLeague", date, time: g.played ? undefined : time, opp: op?.club?.name || "",
+      home, score: g.played ? `${me?.score}-${op?.score}` : undefined };
+  });
+}
+
+// TheSportsDB (ücretsiz anahtar): tura göre çeker; bugüne en yakın turu ikili aramayla bulur.
+async function fbSportsDB(leagueId, sport, teamWord, maxRound) {
+  const [y1, y2] = season(), cache = new Map();
+  const round = async r => {
+    if (!cache.has(r)) { await sleep(2200); const d = await getJSON(`https://www.thesportsdb.com/api/v1/json/123/eventsround.php?id=${leagueId}&r=${r}&s=${y1}-${y2}`); cache.set(r, d.events || []); }
+    return cache.get(r);
+  };
+  const firstDate = evs => evs.map(e => e.dateEvent).sort()[0];
+  let lo = 1, hi = maxRound;
+  const todayStr = ymd(new Date(today));
+  while (lo < hi) { // bugünden sonraki ilk tur
+    const mid = (lo + hi) >> 1, evs = await round(mid);
+    if (!evs.length || firstDate(evs) >= todayStr) hi = mid; else lo = mid + 1;
+  }
+  const out = [];
+  for (let r = Math.max(1, lo - 2); r <= Math.min(maxRound, lo + 8); r++) {
+    for (const e of await round(r)) {
+      if (!e.strEvent.includes(teamWord)) continue;
+      const home = e.strHomeTeam.includes(teamWord);
+      const { date, time } = e.strTimestamp ? trTime(e.strTimestamp + "Z") : { date: e.dateEvent };
+      const played = e.intHomeScore != null && e.intAwayScore != null && e.intHomeScore !== "";
+      out.push({ sport, comp: comp(e.strLeague), date, time: played ? undefined : time,
+        opp: home ? e.strAwayTeam : e.strHomeTeam, home,
+        score: played ? (home ? `${e.intHomeScore}-${e.intAwayScore}` : `${e.intAwayScore}-${e.intHomeScore}`) : undefined });
+    }
+  }
+  return out;
+}
+
+const fb = [], fbErr = [];
+for (const [name, fn] of [["futbol", fbFootball], ["euroleague", fbEuroleague],
+  ["bsl", () => fbSportsDB(4475, "Basketbol", "Fenerbah", 34)], ["voleybol", () => fbSportsDB(4543, "Voleybol", "Fenerbah", 30)]]) {
+  try { const r = await fn(); fb.push(...r); console.log(`Fenerbahçe ${name}: ${r.length} maç`); }
+  catch (e) { fbErr.push(name); console.warn(`Fenerbahçe ${name} alınamadı:`, e.message); }
+}
+if (fb.length) {
+  const seen = new Set();
+  data.fb = fb.filter(m => inWin(m.date)).filter(m => { const k = m.sport + m.date + m.opp; if (seen.has(k)) return false; seen.add(k); return true; })
+    .sort((a, b) => (a.date + (a.time || "")).localeCompare(b.date + (b.time || "")));
+}
+sync.fb = fbErr.length ? "eksik: " + fbErr.join(", ") : "ok";
+
+/* ---------- Spotify kapakları ---------- */
+fs.mkdirSync(path.join(outDir, "img", "spotify"), { recursive: true });
+if (fs.existsSync("img")) fs.cpSync("img", path.join(outDir, "img"), { recursive: true });
+for (const sp of data.spotify || []) {
+  const id = /playlist\/([A-Za-z0-9]+)/.exec(sp.url || "")?.[1]; if (!id) continue;
+  try {
+    const o = await getJSON("https://open.spotify.com/oembed?url=" + encodeURIComponent("https://open.spotify.com/playlist/" + id), 1);
+    if (!sp.title) sp.title = o.title;
+    if (o.thumbnail_url) {
+      const r = await fetch(o.thumbnail_url, { signal: AbortSignal.timeout(20000) });
+      if (r.ok) fs.writeFileSync(path.join(outDir, "img", "spotify", id + ".jpg"), Buffer.from(await r.arrayBuffer()));
+    }
+  } catch (e) { console.warn("Spotify kapağı alınamadı:", id, e.message); }
+  if (fs.existsSync(path.join(outDir, "img", "spotify", id + ".jpg"))) sp.cover = `img/spotify/${id}.jpg`;
+}
+
 data.sync = sync;
 data.built = new Date().toISOString();
 

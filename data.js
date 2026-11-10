@@ -129,7 +129,12 @@ window.PANEL_DATA = {
   savings: [],       // {title, target, current, deadline}
 
   // Bugün sekmesi
-  spotify: [],       // hızlı çal {title, subtitle, url}
+  spotify: [         // hızlı çal {title, subtitle, url, cover} — kapaklar build sırasında tazelenir
+    { title: "slow", url: "https://open.spotify.com/playlist/0qQhl2Piwqb2FZNTVbURB7", cover: "img/spotify/0qQhl2Piwqb2FZNTVbURB7.jpg" },
+    { title: "uzaktan", url: "https://open.spotify.com/playlist/3Oi2n20ahZ4f308FoQaFXC", cover: "img/spotify/3Oi2n20ahZ4f308FoQaFXC.jpg" },
+    { title: "kaptan", url: "https://open.spotify.com/playlist/3jVOnymkY33nxHeN5JYYdp", cover: "img/spotify/3jVOnymkY33nxHeN5JYYdp.jpg" },
+    { title: "pop+", url: "https://open.spotify.com/playlist/3JeiZWncYFRfYAcadIlGff", cover: "img/spotify/3JeiZWncYFRfYAcadIlGff.jpg" }
+  ],
   links: [
     { title: "GitHub", url: "https://github.com/Emrcnkkl" },
     { title: "quant-bot", url: "https://emrcnkkl.github.io/quant-bot/" },

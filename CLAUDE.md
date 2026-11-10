@@ -19,7 +19,12 @@ Emir'in kişisel kontrol paneli (Boğaziçi Bilgisayar Müh. 2. sınıf). Kullan
 - Tarihler `YYYY-AA-GG`, saatler `SS:DD`, tutarlar TL (sayı; bilinmiyorsa `null`). Ders oturumunda `day`: 1 = Pazartesi … 7 = Pazar, `type: "Lab"` olabilir.
 - `curriculum[]` mezuniyet yolu tablosu (status: passed | taking | remaining | elective). Akademik takvim `akademiktakvim.bogazici.edu.tr/tr/json?type=4` (JSON) kaynağından.
 - Uydurma veri ekleme; bilinmeyen alanı boş bırak. "Örnek görünüm" verisi `index.html` içindeki `DEMO()`'dadır ve kaydedilmez.
-- `gcal[]`, `moodle[]`, `sync`, `built` build sırasında üretilir; elle yazma.
+- `gcal[]`, `moodle[]`, `fb[]`, `sync`, `built` build sırasında üretilir; elle yazma.
+- Fenerbahçe (`fb[]`, -21…+120 gün): futbol ESPN (`soccer/all/teams/436/schedule`), EuroLeague resmi API (`teamCode=ULK`),
+  Basketbol Süper Ligi (4475) ve Efeler Ligi (4543) TheSportsDB ücretsiz anahtar `123` ile tur tur (istek sınırı: aralarına 2,2 sn).
+  Kadın voleybolu (Sultanlar Ligi) açık kaynaklarda yok.
+- Spotify: `spotify[]` öğesinde `url` yeter; build oEmbed ile adı ve kapağı alır (`img/spotify/<id>.jpg`, depoda yedeği var).
+- Bu ortamda Node fetch proxy kullanmaz: yerel denemede `NODE_USE_ENV_PROXY=1 NODE_EXTRA_CA_CERTS=/root/.ccr/ca-bundle.crt` ekle.
 
 ## Deneme
 `PANEL_PASSWORD=deneme node tools/build.mjs data.js /tmp/site` → `/tmp/site` klasörünü `python3 -m http.server` ile aç (şifre ekranı, "Bu cihazda hatırla").
