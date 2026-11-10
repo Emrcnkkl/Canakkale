@@ -205,6 +205,8 @@ h1{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1.1;l
 .p-pass{background:var(--good-soft);color:var(--good);border-color:color-mix(in srgb,var(--good) 30%,transparent)}
 .p-take{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
 .p-rem{background:var(--surface);color:var(--ink);border-color:var(--line)}
+.p-fail{background:var(--crit-soft);color:var(--crit);border-color:color-mix(in srgb,var(--crit) 40%,transparent)}
+.pill .gr{margin-left:6px;font-weight:700;opacity:.85}
 .p-elec{background:transparent;color:var(--mark);border:1px dashed var(--mark)}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;text-align:left;padding:0 10px 8px 0}
@@ -276,7 +278,7 @@ td{padding:9px 10px 9px 0;border-top:1px solid var(--line);vertical-align:middle
   </main>
 </div>
 
-<!-- Yayında data.enc.js (şifreli), yerelde data.js (düz) bulunur; olmayan sessizce atlanır. -->
+<!-- Yayında data.enc.js (şifreli) bulunur; yerel denemede düz data.js de olabilir. Olmayan sessizce atlanır. -->
 <script src="data.enc.js"></script>
 <script src="data.js"></script>
 <script>
@@ -483,15 +485,15 @@ function renderSchool(){
     : empty("Akademik takvim boş. Okulun takvim sayfasının linkini ya da tarihleri gönderebilirsin.");
 
   const st=D.settings, total=+st.totalEcts||0, earned=+st.earnedEcts||0, current=D.courses.reduce((a,c)=>a+(+c.ects||0),0);
-  const curr=D.curriculum||[], CS={passed:["Geçti","p-pass"],taking:["Bu dönem","p-take"],remaining:["Alınacak","p-rem"],elective:["Seçmeli (boş)","p-elec"]};
+  const curr=D.curriculum||[], CS={passed:["Geçti","p-pass"],taking:["Bu dönem","p-take"],failed:["Tekrar alınacak","p-fail"],remaining:["Alınacak","p-rem"],elective:["Seçmeli (boş)","p-elec"]};
   const allC=curr.flatMap(x=>x.courses||[]), cnt=k=>allC.filter(c=>c.status===k).length;
   const kpi=(l,v,u="")=>`<div><div class="label">${l}</div><div class="big">${v}${u?`<span style="font-size:14px;color:var(--muted)"> ${u}</span>`:""}</div></div>`;
   const head = total? `<div class="flex"><div class="ring" style="--p:${pct(earned,total).toFixed(1)}"><b class="mono">${Math.round(pct(earned,total))}%</b></div>
       <div class="kpis" style="flex:1">${kpi("Tamamlanan",num(earned),"/ "+num(total)+" AKTS")}${current?kpi("Bu dönem",num(current),"AKTS"):""}${current?kpi("Dönem sonunda",num(earned+current),"AKTS"):""}
-      ${st.gpa?kpi("GANO",esc(st.gpa),"/ 4"):""}${st.gradTerm?kpi("Hedef mezuniyet",esc(st.gradTerm)):""}</div></div>` : "";
+      ${st.gpa?kpi("GANO",esc(st.gpa),"/ 4"):""}${st.advisor?`<div><div class="label">Danışman</div><div style="font-weight:600;margin-top:4px">${esc(st.advisor)}</div>${st.advisorEmail?`<div class="d" style="font-size:12px;color:var(--muted);user-select:all">${esc(st.advisorEmail)}</div>`:""}</div>`:""}${st.gradTerm?kpi("Hedef mezuniyet",esc(st.gradTerm)):""}</div></div>` : "";
   const table = curr.length? `<div class="legend">${Object.entries(CS).map(([k,[l,c]])=>`<span><i class="pill ${c}"></i>${l} <b class="mono">${cnt(k)}</b></span>`).join("")}</div>
       <div class="curr">${curr.map(x=>{const cs=x.courses||[], done=cs.filter(c=>c.status==="passed").length;
-        return `<div class="sem"><div class="semh"><b>${esc(x.semester)}. yarıyıl</b><span class="mono">${done}/${cs.length}</span></div><div class="pills">${cs.map(c=>{const t=CS[c.status]||CS.remaining;return `<span class="pill ${t[1]}" title="${esc(t[0])}${c.note?" · "+esc(c.note):""}">${esc(c.code)}</span>`;}).join("")}</div></div>`;}).join("")}</div>` : "";
+        return `<div class="sem"><div class="semh"><b>${esc(x.semester)}. yarıyıl</b><span class="mono">${done}/${cs.length}</span></div><div class="pills">${cs.map(c=>{const t=CS[c.status]||CS.remaining;return `<span class="pill ${t[1]}" title="${esc(t[0])}${c.grade?" · "+esc(c.grade):""}${c.note?" · "+esc(c.note):""}">${esc(c.code)}${c.grade?`<b class="gr">${esc(c.grade)}</b>`:""}</span>`;}).join("")}</div></div>`;}).join("")}</div>` : "";
   const rem=[...D.remaining].sort((a,b)=>String(a.term||"").localeCompare(String(b.term||"")));
   const remL = rem.length? `<div class="label" style="margin:16px 0 4px">Kalan dersler</div><div class="list">${rem.map(r=>`<div class="row"><div class="main"><div class="t">${esc(r.name)}</div><div class="d">${esc(r.term||"")}</div></div><span class="chip ${r.type==="zorunlu"?"warn":""}">${esc(r.type||"")}</span><span class="mono d">${r.ects?esc(r.ects)+" AKTS":""}</span></div>`).join("")}</div>` : "";
   const grad = (head||table||remL)? head+(table?`<div style="margin-top:18px">${table}</div>`:"")+remL

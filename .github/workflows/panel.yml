@@ -30,7 +30,7 @@ jobs:
 
       - name: Gizli veri deposunu al
         if: env.HAS_DATA_TOKEN == 'true'
-        continue-on-error: true   # depo boşsa ya da token okuyamıyorsa bu depodaki data.js ile devam et
+        continue-on-error: true   # hata mesajını bir sonraki adım verir
         uses: actions/checkout@v4
         with:
           repository: Emrcnkkl/panel-veri
@@ -47,10 +47,11 @@ jobs:
           GCAL_ICS_URLS: ${{ secrets.GCAL_ICS_URLS }}
           MOODLE_ICS_URL: ${{ secrets.MOODLE_ICS_URL }}
         run: |
-          DATA=data.js
-          if [ -f veri/data.js ]; then DATA=veri/data.js; fi
-          echo "Veri dosyası: $DATA"
-          node tools/build.mjs "$DATA" _site
+          if [ ! -f veri/data.js ]; then
+            echo "::error::Gizli panel-veri deposundaki data.js okunamadı. DATA_REPO_TOKEN'ın süresi dolmuş ya da yetkisi eksik olabilir."
+            exit 1
+          fi
+          node tools/build.mjs veri/data.js _site
 
       - uses: actions/upload-pages-artifact@v3
         with:
