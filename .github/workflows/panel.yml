@@ -1,0 +1,59 @@
+name: Panel
+
+# Veriyi (gizli panel-veri deposundan) alır, Google Takvim ve Moodle'ı ekler, şifreler, Pages'e yayınlar.
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 */3 * * *"   # 3 saatte bir takvimleri tazele
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  yayinla:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    env:
+      HAS_DATA_TOKEN: ${{ secrets.DATA_REPO_TOKEN != '' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Gizli veri deposunu al
+        if: env.HAS_DATA_TOKEN == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: Emrcnkkl/panel-veri
+          token: ${{ secrets.DATA_REPO_TOKEN }}
+          path: veri
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Şifreli siteyi hazırla
+        env:
+          PANEL_PASSWORD: ${{ secrets.PANEL_PASSWORD }}
+          GCAL_ICS_URLS: ${{ secrets.GCAL_ICS_URLS }}
+          MOODLE_ICS_URL: ${{ secrets.MOODLE_ICS_URL }}
+        run: |
+          DATA=data.js
+          if [ -f veri/data.js ]; then DATA=veri/data.js; fi
+          echo "Veri dosyası: $DATA"
+          node tools/build.mjs "$DATA" _site
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deploy
+        uses: actions/deploy-pages@v4

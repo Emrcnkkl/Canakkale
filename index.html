@@ -37,6 +37,7 @@
   --blockL:26%; --blockInk:90%; color-scheme:dark;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.5}
 a{color:inherit}
 .app{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:100vh}
@@ -185,6 +186,18 @@ table{width:100%;border-collapse:collapse;font-size:13px}
 th{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;text-align:left;padding:0 10px 8px 0}
 td{padding:9px 10px 9px 0;border-top:1px solid var(--line);vertical-align:middle}
 .tbl{overflow-x:auto}
+.lock{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:var(--bg);padding:16px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px))}
+.lock-card{width:100%;max-width:340px;display:flex;flex-direction:column;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:28px 24px}
+.lock-card h1{font-size:22px}
+.lock-card p{margin:0;color:var(--muted)}
+.lock-ic{width:30px;height:30px;color:var(--accent)}
+#lockPw{font:inherit;font-size:15px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink)}
+#lockPw:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+.lock-rem{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.lock-btn{text-align:center;padding:10px;background:var(--ink);color:var(--surface);box-shadow:none}
+.lock-err{min-height:18px;font-size:13px;color:var(--crit)}
+.lockout{all:unset;cursor:pointer;margin-left:auto;font-size:12px;color:var(--muted);text-decoration:underline}
+.lockout:focus-visible{outline:2px solid var(--accent)}
 @media (max-width:1180px){.s3{grid-column:span 6}.s4,.s5{grid-column:span 6}.s7,.s8{grid-column:span 12}}
 @media (max-width:860px){
   .app{grid-template-columns:minmax(0,1fr)}
@@ -201,6 +214,18 @@ td{padding:9px 10px 9px 0;border-top:1px solid var(--line);vertical-align:middle
 
 </head>
 <body>
+<div class="lock" id="lock" hidden>
+  <form class="lock-card" id="lockForm" autocomplete="on">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="lock-ic"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+    <h1>Panel kilitli</h1>
+    <p>Veriler şifreli. Açmak için şifreni gir.</p>
+    <input type="text" name="username" value="panel" autocomplete="username" hidden>
+    <input id="lockPw" type="password" autocomplete="current-password" placeholder="Şifre" required>
+    <label class="lock-rem"><input id="lockRem" type="checkbox" checked> Bu cihazda hatırla</label>
+    <button class="btn lock-btn" id="lockBtn" type="submit">Aç</button>
+    <div class="lock-err" id="lockErr" role="alert"></div>
+  </form>
+</div>
 <div class="app">
   <nav class="side" aria-label="Sekmeler">
     <div class="brand">Panel<small id="brandSub">Kişisel kontrol paneli</small></div>
@@ -226,9 +251,11 @@ td{padding:9px 10px 9px 0;border-top:1px solid var(--line);vertical-align:middle
   </main>
 </div>
 
+<!-- Yayında data.enc.js (şifreli), yerelde data.js (düz) bulunur; olmayan sessizce atlanır. -->
+<script src="data.enc.js"></script>
 <script src="data.js"></script>
 <script>
-(() => {
+window.__boot = () => {
 "use strict";
 /* ---------- Sekmeler ---------- */
 const ICON = {
@@ -285,11 +312,12 @@ const empty = (txt, ex) => `<div class="empty">${txt}${ex?`<q>${esc(ex)}</q>`:""
 const card = (cls,title,body,meta="") => `<div class="card ${cls}"><h2>${title}${meta?`<span class="meta">${meta}</span>`:""}</h2>${body}</div>`;
 
 /* ---------- Veri ---------- */
-const COLS = ["courses","exams","assignments","calendar","remaining","trainings","certificates","goals","applications","projects","books","films","series","finance","subscriptions","savings","spotify","links","dates","curriculum"];
+const COLS = ["courses","exams","assignments","calendar","remaining","trainings","certificates","goals","applications","projects","books","films","series","finance","subscriptions","savings","spotify","links","dates","curriculum","gcal","moodle"];
 // Veriler data.js'teki window.PANEL_DATA'dan gelir (Claude günceller).
 const RAW = window.PANEL_DATA || {};
 const LIVE = {settings: RAW.settings || {}};
 COLS.forEach(c => LIVE[c] = Array.isArray(RAW[c]) ? RAW[c] : []);
+const RAW_SYNC = RAW.sync || {};
 LIVE.finance = LIVE.finance.map(m => ({...m, id: m.month || m.id || ""}));
 let D = LIVE, demo = false, loaded = true;
 
@@ -305,6 +333,10 @@ function upcoming(limitDays){
   D.assignments.filter(a=>a.status!=="teslim").forEach(a=>items.push({date:a.due,title:a.title,d:[a.course,a.time].filter(Boolean).join(" · "),kind:"Teslim",cls:"warn"}));
   D.calendar.forEach(c=>items.push({date:c.date,title:c.title,d:c.end?`${fmtD(c.date)} – ${fmtD(c.end)}`:"",kind:"Takvim",cls:"acc"}));
   D.dates.forEach(x=>items.push({date:x.yearly?nextYearly(x.date):x.date,title:x.title,d:x.note||"",kind:x.yearly?"Yıllık":"Gün",cls:"mark"}));
+  const norm=x=>String(x||"").toLowerCase().replace(/\s+/g,"");
+  D.gcal.forEach(g=>{ if(g.rec) return; if(D.exams.some(e=>e.date===g.date && norm(g.title).includes(norm(e.course)))) return;
+    items.push({date:g.date,title:g.title,d:[g.time,g.location].filter(Boolean).join(" · "),kind:"Google",cls:""}); });
+  D.moodle.forEach(m=>items.push({date:m.date,title:m.title,d:[m.course,m.time].filter(Boolean).join(" · "),kind:"Moodle",cls:"warn"}));
   D.subscriptions.forEach(s=>{const n=nextRenew(s); if(n) items.push({date:n,title:`${s.name} yenileniyor`,d:tl(s.amount),kind:"Abonelik",cls:""});});
   return items.filter(i=>{const n=daysUntil(i.date); return n!=null && n>=0 && n<=limitDays;}).sort((a,b)=>a.date.localeCompare(b.date));
 }
@@ -332,6 +364,9 @@ function renderToday(){
   const fm = currentMonth();
   const finBody = fm? (()=>{const inc=sum(fm.income), exp=sum(fm.expenses), sub=subMonthly(); return `<div class="kpis"><div><div class="label">Kalan</div><div class="big money ${inc-exp<0?"neg":""}">${tl(inc-exp)}</div></div><div><div class="label">Harcanan</div><div class="big money">${tl(exp)}</div></div></div>${bar(pct(exp,inc), exp>inc?"crit":"")}<div class="d" style="margin-top:6px;color:var(--muted);font-size:12px">${monthName(fm.id)} · gelirin %${Math.round(pct(exp,inc))}'i harcandı${sub?` · abonelikler ${tl(sub)}/ay`:""}</div>`;})()
     : empty("Bu ayın bütçesi girilmedi.");
+  const wk=D.gcal.filter(g=>{const n=daysUntil(g.date);return n!=null&&n>=0&&n<=7;});
+  const gBody = wk.length? `<div class="list">${wk.map(g=>`<div class="row"><span class="mono" style="width:86px;flex:none;font-size:12.5px">${esc(fmtD(g.date,{day:"numeric",month:"short",weekday:"short"}))}</span><div class="main"><div class="t">${esc(g.title)}</div><div class="d">${esc([g.time&&(g.endTime?g.time+"–"+g.endTime:g.time),g.location].filter(Boolean).join(" · "))}</div></div>${countdown(daysUntil(g.date))}</div>`).join("")}</div>`
+    : empty(D.gcal.length||RAW_SYNC.gcal? "Önümüzdeki 7 günde takviminde etkinlik yok." : "Google Takvim henüz bağlı değil.");
   document.getElementById("v-bugun").innerHTML = `<div class="grid">
     ${card("s5",`Bugünkü dersler`,tlist,DAYS[d])}
     ${card("s7","Yaklaşanlar",ulist,"3 hafta")}
@@ -339,6 +374,7 @@ function renderToday(){
     ${card("s4","Bu ay",finBody)}
     ${card("s6","Devam edenler",nowBits?`<div class="list">${nowBits}</div>`:empty("Okuduğun kitap, izlediğin dizi ya da süren bir eğitim yok."))}
     ${card("s6","Bağlantılar",links)}
+    ${card("s12","Bu hafta takvimin",gBody,"Google Takvim")}
   </div>`;
   const urgent = up.filter(i=>daysUntil(i.date)<=3 && (i.kind!=="Takvim")).length;
   document.getElementById("c-bugun").textContent = urgent? urgent : "";
@@ -371,9 +407,10 @@ function renderSchool(){
   const examT = exams.length? `<div class="tbl"><table><thead><tr><th>Ders</th><th>Tür</th><th>Tarih</th><th>Yer</th><th></th></tr></thead><tbody>${exams.map(e=>{const n=daysUntil(e.date);return `<tr style="${n<0?"opacity:.5":""}"><td><b>${esc(e.course)}</b></td><td><span class="chip ${/final/i.test(e.type)?"crit":/vize|ara/i.test(e.type)?"warn":""}">${esc(e.type||"Sınav")}</span></td><td class="mono">${esc(fmtDW(e.date))} ${esc(e.time||"")}</td><td>${esc(e.room||"")}</td><td>${n!=null&&n>=0?countdown(n):e.grade!=null?`<span class="chip good">${esc(e.grade)}</span>`:""}</td></tr>`;}).join("")}</tbody></table></div>`
     : empty("Vize/final tarihlerin yok.","ECON201 vize 18 Kasım 10:00, A-101");
 
-  const asg=[...D.assignments].sort((a,b)=>(a.status==="teslim")-(b.status==="teslim")||(a.due||"").localeCompare(b.due||""));
-  const ST={yapilacak:["Yapılacak",""],devam:["Devam ediyor","acc"],teslim:["Teslim edildi","good"]};
-  const asgL = asg.length? `<div class="list">${asg.map(a=>{const s=ST[a.status]||ST.yapilacak;return `<div class="row" style="${a.status==="teslim"?"opacity:.55":""}"><span class="sw" style="--h:${hue(a.course)}"></span><div class="main"><div class="t">${esc(a.title)}</div><div class="d">${esc(a.course||"")} · ${esc(fmtDW(a.due))}${a.time?" "+esc(a.time):""}</div></div><span class="chip ${s[1]}">${s[0]}</span>${a.status!=="teslim"?countdown(daysUntil(a.due)):""}</div>`;}).join("")}</div>`
+  const mdl=D.moodle.filter(m=>{const n=daysUntil(m.date);return n!=null&&n>=-3;}).map(m=>({course:m.course,title:m.title,due:m.date,time:m.time,status:"moodle",url:m.url}));
+  const asg=[...D.assignments,...mdl].sort((a,b)=>(a.status==="teslim")-(b.status==="teslim")||(a.due||"").localeCompare(b.due||""));
+  const ST={yapilacak:["Yapılacak",""],devam:["Devam ediyor","acc"],teslim:["Teslim edildi","good"],moodle:["Moodle","mark"]};
+  const asgL = asg.length? `<div class="list">${asg.map(a=>{const s=ST[a.status]||ST.yapilacak;return `<div class="row" style="${a.status==="teslim"?"opacity:.55":""}"><span class="sw" style="--h:${hue(a.course)}"></span><div class="main"><div class="t">${a.url?`<a href="${url(a.url)}" target="_blank" rel="noopener" style="text-decoration:none">${esc(a.title)}</a>`:esc(a.title)}</div><div class="d">${esc(a.course||"")} · ${esc(fmtDW(a.due))}${a.time?" "+esc(a.time):""}</div></div><span class="chip ${s[1]}">${s[0]}</span>${a.status!=="teslim"?countdown(daysUntil(a.due)):""}</div>`;}).join("")}</div>`
     : empty("Ödev ya da proje teslimi yok.","CMPE220 ödev 3, teslim 22 Kasım 23:59");
 
   const calAll=[...D.calendar].sort((a,b)=>(a.date||"").localeCompare(b.date||""));
@@ -611,7 +648,54 @@ function DEMO(){
 renderAll();
 const syncEl=document.getElementById("sync"), syncTx=document.getElementById("syncText");
 if(window.PANEL_DATA){ syncEl.className="sync ok"; syncTx.textContent = RAW.updated? "Güncellendi: "+fmtD(RAW.updated,{day:"numeric",month:"short",year:"numeric"}) : "Veri yüklendi"; }
-else { syncEl.className="sync err"; syncTx.textContent="data.js bulunamadı"; }
+else { syncEl.className="sync err"; syncTx.textContent="Veri bulunamadı"; }
+if(RAW.built){ syncTx.textContent = "Eşitlendi: "+new Date(RAW.built).toLocaleString("tr-TR",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}); }
+};
+</script>
+<script>
+/* Şifre çözme: PBKDF2-SHA256 → AES-GCM. Anahtar istenirse bu tarayıcıda saklanır, şifre saklanmaz. */
+(async () => {
+  const enc = window.PANEL_ENC;
+  if (!enc) { window.__boot(); return; }
+  const lock = document.getElementById("lock"), err = document.getElementById("lockErr");
+  const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const toB64 = buf => { let s = ""; new Uint8Array(buf).forEach(b => s += String.fromCharCode(b)); return btoa(s); };
+  const KEY = "panel.key." + enc.salt;
+  async function derive(pw) {
+    const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
+    return crypto.subtle.deriveKey({ name: "PBKDF2", salt: new TextEncoder().encode(enc.salt), iterations: enc.iter, hash: "SHA-256" },
+      base, { name: "AES-GCM", length: 256 }, true, ["decrypt"]);
+  }
+  async function open(key) {
+    const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64(enc.iv) }, key, b64(enc.ct));
+    window.PANEL_DATA = JSON.parse(new TextDecoder().decode(pt));
+    lock.hidden = true;
+    window.__boot();
+    const sync = document.getElementById("sync");
+    const b = document.createElement("button"); b.className = "lockout"; b.type = "button"; b.textContent = "Kilitle";
+    b.onclick = () => { try { localStorage.removeItem(KEY); } catch (_) {} location.reload(); };
+    sync.appendChild(b);
+  }
+  try {
+    const saved = localStorage.getItem(KEY);
+    if (saved) { await open(await crypto.subtle.importKey("raw", b64(saved), "AES-GCM", false, ["decrypt"])); return; }
+  } catch (_) { try { localStorage.removeItem(KEY); } catch (_) {} }
+  lock.hidden = false;
+  document.getElementById("lockPw").focus();
+  document.getElementById("lockForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const btn = document.getElementById("lockBtn"); btn.textContent = "Açılıyor…"; err.textContent = "";
+    try {
+      if (!window.crypto?.subtle) throw new Error("nocrypto");
+      const key = await derive(document.getElementById("lockPw").value);
+      await open(key);
+      if (document.getElementById("lockRem").checked) { try { localStorage.setItem(KEY, toB64(await crypto.subtle.exportKey("raw", key))); } catch (_) {} }
+    } catch (x) {
+      btn.textContent = "Aç";
+      err.textContent = x && x.message === "nocrypto" ? "Bu tarayıcı şifre çözmeyi desteklemiyor." : "Şifre yanlış.";
+      document.getElementById("lockPw").select();
+    }
+  });
 })();
 </script>
 </body>
