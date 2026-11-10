@@ -30,6 +30,9 @@ Emir'in kişisel kontrol paneli (Boğaziçi Bilgisayar Müh. 2. sınıf). Kullan
 - GANO hesaplayıcı (Okul): `settings.gpaBase {credits, points}` (BUIS "Overall Attempted / Overall Points"), derslerde `credit` ve tekrar için `repeatOf {code,grade,credit}`;
   Boğaziçi katsayıları AA 4 … F 0, kredi ağırlıklı, tekrarda eski not çıkar. Seçimler `localStorage panel.gpa`.
 - Telefon (≤860px): altta 8 simgeli sekme çubuğu, üstte ince başlık (arama + tema döngüsü); karşılama alanı yalnızca Bugün'de.
+- Sınav hazırlığı (Okul): derste `syllabus [{ch, title, items: ["…" | {t, k:"concept"|"lab"}]}]`, sınavda `covers [ch…]`, isteğe bağlı `skip [k…]`, `coversNote`, `weight`.
+  Konu kimliği `DERS:ch-sıra` (1'den). Kullanıcı "şunu çalıştım" derse `studyDone[]`'a ekle (her cihazda); sitedeki tıklamalar `localStorage panel.study` (cihaza özel, veriyi geçersiz kılar).
+  Derste ayrıca `teacher, office, email, assistants, book, grading, notes[]` gösterilir.
 - Finans: `settings.monthlyBudget` her ay varsayılan bütçe; abonelikler (aylık karşılığı) giderlere otomatik eklenir (`monthExp`).
 - `curriculum[]` status'ta `failed` (kırmızı) ve `grade` (harf notu) da olabilir; `settings.advisor`, `advisorEmail`.
 - Spotify: `spotify[]` öğesinde `url` yeter; build oEmbed ile adı ve kapağı alır (`img/spotify/<id>.jpg`, depoda yedeği var).

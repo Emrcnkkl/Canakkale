@@ -423,6 +423,33 @@ tbody tr:hover td{background:color-mix(in srgb,var(--surface-2) 70%,transparent)
 .socl{width:18px;height:18px;border-radius:5px}
 .socl.nolg::after{font-size:9px}
 .socl.lgw{background:transparent}
+/* ---------- Sınav hazırlığı ---------- */
+#prepBody{display:flex;flex-direction:column;gap:10px}
+.prep{border:1px solid var(--line);border-radius:14px;background:var(--surface-2);overflow:hidden}
+.prep.open{border-color:color-mix(in srgb,var(--accent) 40%,transparent)}
+.prep-h{all:unset;box-sizing:border-box;cursor:pointer;width:100%;display:flex;align-items:center;gap:14px;padding:12px 14px}
+.prep-h:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.prep-h .main{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.prep-h .t{font-weight:600;font-size:14.5px;display:flex;align-items:center;gap:8px}
+.prep-h .d{font-size:12px;color:var(--muted)}
+.prep-h .bar{margin-top:4px;max-width:420px}
+.pring{--p:0;flex:none;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(closest-side,var(--surface-solid) 72%,transparent 73%),conic-gradient(var(--accent) calc(var(--p)*1%),var(--line) 0)}
+.pring b{font:700 11px var(--f-mono)}
+.prep-b{padding:4px 14px 14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.pch{background:var(--surface-solid);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.pch-h{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;margin-bottom:8px}
+.pch-h span{color:var(--muted)}
+.tps{display:flex;flex-wrap:wrap;gap:6px}
+.tp{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:7px;padding:6px 10px 6px 8px;border-radius:9px;border:1px solid var(--line);background:var(--surface-2);font-size:12.5px;line-height:1.3;transition:background .12s,border-color .12s}
+.tp::before{content:"";flex:none;width:14px;height:14px;border-radius:4px;border:1.5px solid var(--line-strong);box-sizing:border-box}
+.tp:hover{border-color:var(--line-strong)}
+.tp:focus-visible{outline:2px solid var(--accent)}
+.tp[aria-pressed="true"]{background:var(--good-soft);border-color:color-mix(in srgb,var(--good) 45%,transparent);color:var(--ink)}
+.tp[aria-pressed="true"]::before{border-color:var(--good);background:var(--good) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/11px no-repeat}
+.tp em{font-style:normal;font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-2);padding:1px 5px;border-radius:4px;background:var(--accent2-soft)}
+.cg{margin-top:3px;font-size:11.5px}
+.cnotes{margin:6px 0 0;padding-left:16px;font-size:11.5px;color:var(--muted);display:flex;flex-direction:column;gap:1px}
+@media (max-width:860px){ .prep-h{flex-wrap:wrap;gap:10px} .prep-h .main{flex-basis:calc(100% - 120px)} .prep-b{grid-template-columns:1fr;padding:4px 10px 12px} .pring{display:none} }
 /* ---------- GANO hesaplayıcı ---------- */
 .gp-top{display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px 26px;padding-bottom:14px;border-bottom:1px solid var(--line)}
 .gp-top small{font-size:12px;color:var(--muted);font-family:var(--f-mono)}
@@ -690,7 +717,7 @@ const empty = (txt, ex) => `<div class="empty">${txt}${ex?`<q>${esc(ex)}</q>`:""
 const card = (cls,title,body,meta="") => `<div class="card ${cls}"><h2>${title}${meta?`<span class="meta">${meta}</span>`:""}</h2>${body}</div>`;
 
 /* ---------- Veri ---------- */
-const COLS = ["courses","exams","assignments","calendar","remaining","trainings","certificates","goals","applications","projects","books","films","series","finance","subscriptions","savings","spotify","links","dates","curriculum","gcal","moodle","fb","socials"];
+const COLS = ["courses","exams","assignments","calendar","remaining","trainings","certificates","goals","applications","projects","books","films","series","finance","subscriptions","savings","spotify","links","dates","curriculum","gcal","moodle","fb","socials","studyDone"];
 // Veriler data.js'teki window.PANEL_DATA'dan gelir (Claude günceller).
 const RAW = window.PANEL_DATA || {};
 const LIVE = {settings: RAW.settings || {}};
@@ -833,6 +860,42 @@ function renderSocials(){
   el.hidden=!(D.socials||[]).length;
 }
 
+/* ---------- Sınav hazırlığı ---------- */
+let studyOv={}; try{ studyOv=JSON.parse(localStorage.getItem("panel.study")||"{}"); }catch(_){}
+let prepOpen=null; // açık sınav anahtarı
+const isDone = id => (id in studyOv) ? !!studyOv[id] : (D.studyDone||[]).includes(id);
+const examKey = e => `${e.course}|${e.type}|${e.date}`;
+function examTopics(e){
+  const c=D.courses.find(x=>x.code===e.course); if(!c||!c.syllabus||!e.covers) return null;
+  const chs=[];
+  for(const ch of c.syllabus){ if(!e.covers.map(String).includes(String(ch.ch))) continue;
+    const items=ch.items.map((it,i)=>{const o=typeof it==="string"?{t:it}:it; return {...o,id:`${c.code}:${ch.ch}-${i+1}`};}).filter(o=>!(e.skip||[]).includes(o.k));
+    if(items.length) chs.push({ch:ch.ch,title:ch.title,items}); }
+  return chs;
+}
+function examProgress(e){ const chs=examTopics(e); if(!chs) return null; const all=chs.flatMap(c=>c.items); const d=all.filter(x=>isDone(x.id)).length; return {chs,total:all.length,done:d}; }
+function prepBody(){
+  const ex=D.exams.filter(e=>e.covers&&daysUntil(e.date)>=0).sort((a,b)=>a.date.localeCompare(b.date));
+  if(!ex.length) return empty("Hazırlık planı olan yaklaşan sınav yok. Ders syllabus'unu gönderirsen konuları eklerim.");
+  if(prepOpen==null) prepOpen=examKey(ex[0]);
+  return ex.map(e=>{
+    const pr=examProgress(e), n=daysUntil(e.date), left=pr.total-pr.done, p=pct(pr.done,pr.total), open=prepOpen===examKey(e);
+    const pace = left===0? "Tüm konular çalışıldı" : n===0? `Sınav bugün · ${left} konu kaldı` : `Günde ~${Math.ceil(left/n)} konu`;
+    return `<div class="prep${open?" open":""}">
+      <button type="button" class="prep-h" data-k="${esc(examKey(e))}" aria-expanded="${open}">${dtile(e.date,e.time)}<span class="code" style="--h:${hue(e.course)}">${esc(e.course)}</span>
+        <span class="main"><span class="t">${esc(e.type)}${e.weight?` <span class="chip">%${esc(e.weight)}</span>`:""}</span><span class="d">${esc(e.coversNote||"")}${e.coversNote?" · ":""}${pr.done}/${pr.total} konu · ${pace}</span>${bar(p,p>=100?"good":"")}</span>
+        <span class="pring" style="--p:${p.toFixed(1)}"><b>${Math.round(p)}</b></span>${countdown(n)}</button>
+      ${open?`<div class="prep-b">${pr.chs.map(ch=>{const dn=ch.items.filter(x=>isDone(x.id)).length; return `<div class="pch"><div class="pch-h"><b>${esc(ch.title)}</b><span class="mono">${dn}/${ch.items.length}</span></div><div class="tps">${ch.items.map(it=>`<button type="button" class="tp${it.k?" "+it.k:""}" aria-pressed="${isDone(it.id)}" data-id="${esc(it.id)}">${esc(it.t)}${it.k==="concept"?`<em>kavram</em>`:it.k==="lab"?`<em>lab</em>`:""}</button>`).join("")}</div></div>`;}).join("")}</div>`:""}
+    </div>`;}).join("");
+}
+document.getElementById("v-okul").addEventListener("click",e=>{
+  const h=e.target.closest(".prep-h"), t=e.target.closest(".tp");
+  if(h){ prepOpen = prepOpen===h.dataset.k ? "" : h.dataset.k; }
+  else if(t){ const id=t.dataset.id; studyOv[id]=!isDone(id); try{ localStorage.setItem("panel.study",JSON.stringify(studyOv)); }catch(_){} }
+  else return;
+  const el=document.getElementById("prepBody"); if(el) el.innerHTML=prepBody();
+});
+
 /* ---------- GANO hesaplayıcı ---------- */
 const GRADES=[["AA",4],["BA",3.5],["BB",3],["CB",2.5],["CC",2],["DC",1.5],["DD",1],["F",0]];
 const GP=Object.fromEntries(GRADES);
@@ -908,7 +971,7 @@ function renderSchool(){
 
   const exams=[...D.exams].sort((a,b)=>(a.date||"").localeCompare(b.date||""));
   const examT = exams.length? `<div class="list">${exams.map(e=>{const n=daysUntil(e.date), cls=/final/i.test(e.type)?"crit":/vize|ara/i.test(e.type)?"warn":"";
-      return `<div class="row${n<0?" done":""}">${dtile(e.date)}<span class="code" style="--h:${hue(e.course)}">${esc(e.course)}</span><div class="main"><div class="t">${esc(e.type||"Sınav")}</div><div class="d">${esc([fmtD(e.date,{weekday:"long"}),e.time,e.room].filter(Boolean).join(" · "))}</div></div>${n!=null&&n>=0?countdown(n):e.grade!=null?`<span class="chip good">${esc(e.grade)}</span>`:`<span class="chip">Tamamlandı</span>`}</div>`;}).join("")}</div>`
+      return `<div class="row${n<0?" done":""}">${dtile(e.date)}<span class="code" style="--h:${hue(e.course)}">${esc(e.course)}</span><div class="main"><div class="t">${esc(e.type||"Sınav")}</div><div class="d">${esc([fmtD(e.date,{weekday:"long"}),e.time,e.room].filter(Boolean).join(" · "))}${(()=>{const pr=examProgress(e);return pr&&n>=0?` · hazırlık ${pr.done}/${pr.total}`:"";})()}</div></div>${n!=null&&n>=0?countdown(n):e.grade!=null?`<span class="chip good">${esc(e.grade)}</span>`:`<span class="chip">Tamamlandı</span>`}</div>`;}).join("")}</div>`
     : empty("Vize/final tarihlerin yok.","ECON201 vize 18 Kasım 10:00, A-101");
 
   const mdl=D.moodle.filter(m=>{const n=daysUntil(m.date);return n!=null&&n>=-3;}).map(m=>({course:m.course,title:m.title,due:m.date,time:m.time,status:"moodle",url:m.url}));
@@ -946,10 +1009,11 @@ function renderSchool(){
   const absL = absent.length? `<div class="list">${absent.map(c=>{const u=+c.absences||0,l=+c.absenceLimit; const p=pct(u,l); return `<div class="row"><div class="main"><div class="t">${esc(c.code||c.name)}</div>${bar(p,p>=75?"crit":p>=50?"mark":"good")}</div><span class="mono d">${u}/${l} saat</span></div>`;}).join("")}</div>`
     : empty("Devamsızlık takibi için her dersin devamsızlık sınırını yaz.");
 
-  const courseList = D.courses.length? `<div class="list">${D.courses.map(c=>`<div class="row"><span class="sw" style="--h:${hue(c.code||c.name)}"></span><div class="main"><div class="t">${esc(c.name)}${c.code?` <span class="mono d">${esc(c.code)}</span>`:""}</div><div class="d">${esc([c.teacher,c.office].filter(Boolean).join(" · "))}${c.email?` · <span style="user-select:all">${esc(c.email)}</span>`:""}</div></div>${(c.links||[]).map(l=>`<a class="lnk" href="${url(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`).join(" ")}${c.ects?`<span class="chip">${esc(c.ects)} AKTS</span>`:""}</div>`).join("")}</div>` : empty("Ders yok.");
+  const courseList = D.courses.length? `<div class="list">${D.courses.map(c=>`<div class="row"><span class="sw" style="--h:${hue(c.code||c.name)}"></span><div class="main"><div class="t">${esc(c.name)}${c.code?` <span class="mono d">${esc(c.code)}</span>`:""}</div><div class="d">${esc([c.teacher,c.office].filter(Boolean).join(" · "))}${c.email?` · <span style="user-select:all">${esc(c.email)}</span>`:""}</div>${c.grading?`<div class="d cg">${esc(c.grading)}</div>`:""}${(c.notes||[]).length?`<ul class="cnotes">${c.notes.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}</div>${(c.links||[]).map(l=>`<a class="lnk" href="${url(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`).join(" ")}${c.ects?`<span class="chip">${esc(c.ects)} AKTS</span>`:""}</div>`).join("")}</div>` : empty("Ders yok.");
 
   document.getElementById("v-okul").innerHTML = `<div class="grid">
     ${card("s12","Haftalık program",week, D.courses.length? `${D.courses.length} ders`:"")}
+    ${card("s12","Sınav hazırlığı",`<div id="prepBody">${prepBody()}</div>`,"Konuya tıkla: çalışıldı")}
     ${card("s7","Sınavlar",examT)}
     ${card("s5","Ödev ve proje teslimleri",asgL)}
     ${card("s5","Akademik takvim",calL,"Boğaziçi")}
@@ -1112,6 +1176,8 @@ function renderTop(){
   else hl.push(["okul","blue","Bugün", ses.length? "Dersler bitti":"Ders yok"]);
   const ex=[...D.exams].filter(e=>daysUntil(e.date)>=0).sort((a,b)=>a.date.localeCompare(b.date))[0];
   if(ex){ const n=daysUntil(ex.date); hl.push(["okul", n<=3?"crit":"", "Sıradaki sınav", `${ex.course} ${ex.type||""} · ${when(n)}`]); }
+  const px=D.exams.filter(e=>e.covers&&daysUntil(e.date)>=0).sort((a,b)=>a.date.localeCompare(b.date))[0];
+  if(px){ const pr=examProgress(px); if(pr) hl.push(["okul", pr.done/pr.total<.5&&daysUntil(px.date)<=7?"crit":"mark", "Hazırlık", `${px.course} ${px.type} · %${Math.round(pct(pr.done,pr.total))}`]); }
   const asg=[...D.assignments.filter(a=>a.status!=="teslim").map(a=>({t:a.title,d:a.due})),...D.moodle.map(x=>({t:x.title,d:x.date}))].filter(a=>daysUntil(a.d)>=0).sort((a,b)=>a.d.localeCompare(b.d))[0];
   if(asg) hl.push(["okul","crit","Teslim", `${asg.t} · ${when(daysUntil(asg.d))}`]);
   const fm=currentMonth();
