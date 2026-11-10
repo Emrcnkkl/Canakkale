@@ -402,9 +402,52 @@ tbody tr:hover td{background:color-mix(in srgb,var(--surface-2) 70%,transparent)
 .tl .row .time b{font-size:13px;color:var(--ink);font-weight:600}
 .tbar{width:4px;align-self:stretch;border-radius:4px;flex:none;background:hsl(var(--h) 65% 52%)}
 .tl .row.now{background:var(--accent-soft);border-radius:12px;padding:11px 12px;margin-inline:-12px}
+/* ---------- Hava ve sosyal ---------- */
+.stack{display:flex;flex-direction:column;gap:18px;min-width:0}
+.wxi{width:22px;height:22px;flex:none;color:var(--muted)}
+.wxi .wsun{color:var(--accent);stroke:var(--accent)}
+.wxi .wmoon{stroke:var(--accent-2)}
+.wxi .wrain{stroke:var(--accent-2)}
+.wxi .wsnow{fill:var(--accent-2);stroke:none}
+.wxi.big{width:52px;height:52px;stroke-width:1.3}
+.clockrow{display:flex;align-items:center;gap:16px}
+.wx-mini{display:inline-flex;align-items:center;gap:8px;padding-right:16px;border-right:1px solid var(--line)}
+.wx-mini .wxi{width:30px;height:30px;stroke-width:1.5}
+.wx-mini span{display:flex;flex-direction:column;line-height:1.15}
+.wx-mini b{font-family:var(--f-display);font-size:20px;font-weight:600}
+.wx-mini small{font-size:11.5px;color:var(--muted)}
+.socials{display:flex;gap:6px;justify-content:space-between}
+.soc{flex:1;display:grid;place-items:center;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);transition:border-color .15s,transform .15s}
+.soc:hover{border-color:var(--accent);transform:translateY(-1px)}
+.soc:focus-visible{outline:2px solid var(--accent)}
+.socl{width:18px;height:18px;border-radius:5px}
+.socl.nolg::after{font-size:9px}
+.socl.lgw{background:transparent}
+/* ---------- GANO hesaplayıcı ---------- */
+.gp-top{display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px 26px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.gp-top small{font-size:12px;color:var(--muted);font-family:var(--f-mono)}
+.gp-top small.pos{color:var(--good)} .gp-top small.neg{color:var(--crit)}
+.gp-arrow{font-size:22px;color:var(--muted);padding-bottom:6px}
+.gp-list{display:flex;flex-direction:column}
+.gp-row{display:flex;align-items:center;justify-content:space-between;gap:10px 16px;flex-wrap:wrap;padding:11px 0;border-top:1px solid var(--line)}
+.gp-row:first-child{border-top:0}
+.gp-c{display:flex;align-items:center;gap:10px;min-width:0}
+.gp-c small{font-size:11.5px;color:var(--muted)}
+.gp-g{display:grid;grid-template-columns:repeat(8,minmax(34px,1fr));gap:3px;padding:3px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line)}
+.gp-g button{all:unset;cursor:pointer;text-align:center;font:600 11.5px var(--f-mono);padding:6px 0;border-radius:7px;color:var(--muted);transition:background .12s,color .12s}
+.gp-g button:hover{color:var(--ink);background:var(--surface-solid)}
+.gp-g button:focus-visible{outline:2px solid var(--accent)}
+.gp-g button[aria-checked="true"]{color:#fff}
+.gp-g .g-AA[aria-checked="true"],.gp-g .g-BA[aria-checked="true"]{background:var(--good)}
+.gp-g .g-BB[aria-checked="true"],.gp-g .g-CB[aria-checked="true"]{background:var(--accent-2)}
+.gp-g .g-CC[aria-checked="true"],.gp-g .g-DC[aria-checked="true"]{background:var(--warn)}
+.gp-g .g-DD[aria-checked="true"],.gp-g .g-F[aria-checked="true"]{background:var(--crit)}
+.gp-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:6px;padding-top:12px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+.gp-foot ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:3px}
+.gp-foot b{color:var(--ink)}
 /* Giriş hareketi */
 @keyframes rise{from{opacity:.25;transform:translateY(10px)}to{opacity:1;transform:none}}
-.view:not([hidden])>.grid>*,.view:not([hidden])>.card,.view:not([hidden])>.pgrid>*{animation:rise .5s cubic-bezier(.2,.7,.2,1) both}
+.view.anim>.grid>*,.view.anim>.card,.view.anim>.pgrid>*{animation:rise .5s cubic-bezier(.2,.7,.2,1) both}
 .view>.grid>*:nth-child(2),.pgrid>*:nth-child(2){animation-delay:.04s}.view>.grid>*:nth-child(3),.pgrid>*:nth-child(3){animation-delay:.08s}
 .view>.grid>*:nth-child(4){animation-delay:.12s}.view>.grid>*:nth-child(5){animation-delay:.16s}.view>.grid>*:nth-child(n+6){animation-delay:.2s}
 /* Komut paleti */
@@ -425,7 +468,7 @@ tbody tr:hover td{background:color-mix(in srgb,var(--surface-2) 70%,transparent)
 @media (max-width:860px){
   .app{grid-template-columns:minmax(0,1fr)}
   .side{width:auto}
-  .side-foot .search-btn kbd,.side-foot .sync,.tab kbd,.tab[aria-selected="true"]::before{display:none}
+  .side-foot .search-btn kbd,.side-foot .sync,.side-foot .socials,.tab kbd,.tab[aria-selected="true"]::before{display:none}
   .side-foot{margin:0 0 0 auto;flex-direction:row;align-items:center}
   .search-btn{padding:7px}
   .hero{padding:20px}
@@ -437,6 +480,59 @@ tbody tr:hover td{background:color-mix(in srgb,var(--surface-2) 70%,transparent)
   .tab{white-space:nowrap}
   main{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
   .s3,.s4,.s5,.s6,.s7,.s8{grid-column:span 12}
+}
+.mtop{display:none}
+@media (max-width:860px){
+  body::before{display:none}
+  .mtop{display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:20;padding:calc(10px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));
+    background:color-mix(in srgb,var(--bg) 78%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+  .mtop-b{display:flex;align-items:center;gap:8px;font-family:var(--f-display);font-weight:700;font-size:17px;margin-right:auto}
+  .mtop .school{width:24px;height:24px}
+  .mbtn{all:unset;cursor:pointer;width:36px;height:36px;display:grid;place-items:center;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink)}
+  .mbtn svg{width:18px;height:18px}
+  .mbtn:focus-visible{outline:2px solid var(--accent)}
+  /* alt sekme çubuğu */
+  .side{position:fixed!important;top:auto!important;bottom:0;left:0;right:0;z-index:30;height:auto;width:auto;display:block;overflow:visible;
+    padding:6px max(6px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(6px,env(safe-area-inset-left,0px));
+    background:color-mix(in srgb,var(--surface-solid) 82%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-right:0;border-top:1px solid var(--line);border-bottom:0}
+  .side .brand,.side .side-foot{display:none}
+  .tabs{display:grid;grid-template-columns:repeat(8,1fr);gap:2px}
+  .tab{flex-direction:column;justify-content:center;gap:3px;padding:6px 0 5px;border-radius:10px;white-space:nowrap;min-width:0}
+  .tab svg{width:20px;height:20px}
+  .tab .tlab{font-size:0;line-height:1}
+  .tab .tlab::after{content:attr(data-s);font-size:9.5px;font-weight:600}
+  .tab .cnt{position:absolute;top:3px;right:calc(50% - 18px);min-width:15px;height:15px;font-size:9px;padding:0 4px}
+  .tab[aria-selected="true"]{background:var(--accent-soft)}
+  .tab[aria-selected="true"]::before{display:none}
+  main{padding-top:14px;padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))}
+  .hero{padding:18px 18px 16px;border-radius:18px}
+  .hero h1{font-size:27px}
+  body:not([data-tab="bugun"]) .hero{display:none}
+  .hl{flex-wrap:nowrap;overflow-x:auto;margin-inline:-18px;padding:2px 18px 4px;scrollbar-width:none}
+  .hl::-webkit-scrollbar{display:none}
+  .hl a{flex:none}
+  .fbcard .kpis{grid-template-columns:1fr}
+  .hero-side{flex-direction:row;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .clockrow{order:-1}
+  .clock{font-size:34px}
+  .card{padding:16px}
+  .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tile .play{display:none}
+  .cover{width:44px;height:44px}
+  .list .row{gap:10px}
+  .dt{width:40px} .dt b{font-size:16px}
+  .cd{min-width:42px;height:38px} .cd b{font-size:15px}
+  #v-fb .spb,#v-bugun .spb{display:none}
+  .tlogo{width:22px;height:22px}
+  .week-wrap{scroll-snap-type:x proximity;margin-inline:-16px;padding-inline:16px}
+  .wcol,.wh{scroll-snap-align:start}
+  .gp-g{width:100%}
+  .gp-top{gap:12px 18px}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .catrow{grid-template-columns:90px minmax(0,1fr) 76px}
+  .cmdk{padding-top:10vh}
+  .cmdk-it .k{width:58px}
+  .cmdk-it .d{display:none}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -462,12 +558,18 @@ tbody tr:hover td{background:color-mix(in srgb,var(--surface-2) 70%,transparent)
     <div class="cmdk-list" id="cmdkList" role="listbox"></div>
   </div>
 </div>
+<div class="mtop" id="mtop">
+  <span class="mtop-b"><img class="school" src="https://www.google.com/s2/favicons?domain=bogazici.edu.tr&amp;sz=128" alt="" referrerpolicy="no-referrer" onerror="this.remove()">Panel</span>
+  <button type="button" class="mbtn" id="mSearch" aria-label="Ara"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg></button>
+  <button type="button" class="mbtn" id="mTheme" aria-label="Temayı değiştir"></button>
+</div>
 <div class="app">
   <nav class="side" aria-label="Sekmeler">
     <div class="brand"><span class="brand-row"><img class="school" id="schoolLogo" src="https://www.google.com/s2/favicons?domain=bogazici.edu.tr&amp;sz=128" alt="" referrerpolicy="no-referrer" onerror="this.remove()">Panel</span><small id="brandSub">Kişisel kontrol paneli</small></div>
     <div class="tabs" role="tablist" id="tabs"></div>
     <div class="side-foot">
       <button class="search-btn" id="searchBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg>Ara<kbd>Ctrl K</kbd></button>
+      <div class="socials" id="socials" aria-label="Sosyal medya"></div>
       <div class="theme" role="radiogroup" aria-label="Tema" id="themeSw">
         <button type="button" role="radio" data-t="system" title="Sistem teması" aria-label="Sistem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></button>
         <button type="button" role="radio" data-t="light" title="Açık tema" aria-label="Açık"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg></button>
@@ -484,7 +586,7 @@ tbody tr:hover td{background:color-mix(in srgb,var(--surface-2) 70%,transparent)
         <div class="hl" id="highlights"></div>
       </div>
       <div class="hero-side">
-        <div class="clock" id="clock" aria-label="Saat">--:--</div>
+        <div class="clockrow"><span class="wx-mini" id="wxMini" hidden></span><div class="clock" id="clock" aria-label="Saat">--:--</div></div>
         <div class="term" id="term"></div>
       </div>
     </header>
@@ -518,10 +620,18 @@ const ICON = {
   finans:'<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 15h2"/>'
 };
 const TABS = [["bugun","Bugün"],["okul","Okul"],["gelisim","Gelişim"],["kariyer","Kariyer"],["projeler","Projeler"],["kitapfilm","Kitap & Film"],["fb","Fenerbahçe"],["finans","Finans"]];
+const SHORT = {kitapfilm:"Kitap",fb:"FB",projeler:"Proje"};
 const tabsEl = document.getElementById("tabs");
-tabsEl.innerHTML = TABS.map(([id,l],ti) => `<button class="tab" role="tab" id="t-${id}" aria-controls="v-${id}" data-tab="${id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICON[id]}</svg>${l}<span class="cnt" id="c-${id}"></span><kbd>${ti+1}</kbd></button>`).join("");
+tabsEl.innerHTML = TABS.map(([id,l],ti) => `<button class="tab" role="tab" id="t-${id}" aria-controls="v-${id}" data-tab="${id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICON[id]}</svg><span class="tlab" data-s="${SHORT[id]||l}">${l}</span><span class="cnt" id="c-${id}"></span><kbd>${ti+1}</kbd></button>`).join("");
+function weekToToday(){
+  const w=document.querySelector("#v-okul .week-wrap"), c=w&&w.querySelector(".wh.today");
+  if(w&&c&&w.scrollWidth>w.clientWidth+4) w.scrollLeft=Math.max(0,c.offsetLeft-60);
+}
 function showTab(id){
   if(!TABS.some(t=>t[0]===id)) id="bugun";
+  document.body.dataset.tab=id;
+  if(id==="okul") requestAnimationFrame(weekToToday);
+  const v=document.getElementById("v-"+id); if(v){ v.classList.add("anim"); clearTimeout(v._anim); v._anim=setTimeout(()=>v.classList.remove("anim"),900); }
   TABS.forEach(([t])=>{document.getElementById("v-"+t).hidden = t!==id; document.getElementById("t-"+t).setAttribute("aria-selected", t===id);});
 }
 tabsEl.addEventListener("click",e=>{const b=e.target.closest(".tab"); if(!b) return; location.hash=b.dataset.tab; showTab(b.dataset.tab);});
@@ -580,12 +690,13 @@ const empty = (txt, ex) => `<div class="empty">${txt}${ex?`<q>${esc(ex)}</q>`:""
 const card = (cls,title,body,meta="") => `<div class="card ${cls}"><h2>${title}${meta?`<span class="meta">${meta}</span>`:""}</h2>${body}</div>`;
 
 /* ---------- Veri ---------- */
-const COLS = ["courses","exams","assignments","calendar","remaining","trainings","certificates","goals","applications","projects","books","films","series","finance","subscriptions","savings","spotify","links","dates","curriculum","gcal","moodle","fb"];
+const COLS = ["courses","exams","assignments","calendar","remaining","trainings","certificates","goals","applications","projects","books","films","series","finance","subscriptions","savings","spotify","links","dates","curriculum","gcal","moodle","fb","socials"];
 // Veriler data.js'teki window.PANEL_DATA'dan gelir (Claude günceller).
 const RAW = window.PANEL_DATA || {};
 const LIVE = {settings: RAW.settings || {}};
 COLS.forEach(c => LIVE[c] = Array.isArray(RAW[c]) ? RAW[c] : []);
 const RAW_SYNC = RAW.sync || {};
+LIVE.weather = RAW.weather || null;
 LIVE.finance = LIVE.finance.map(m => ({...m, id: m.month || m.id || ""}));
 let D = LIVE, demo = false, loaded = true;
 
@@ -679,6 +790,88 @@ function renderFB(){
 }
 document.getElementById("v-fb").addEventListener("click",e=>{const b=e.target.closest("#fbseg button"); if(!b) return; fbFilter=b.dataset.v; renderFB();});
 
+/* ---------- Hava durumu (Open-Meteo, anahtarsız; 30 dk önbellek) ---------- */
+let WX=null, wxErr=false;
+const WMO={0:["Açık","sun"],1:["Az bulutlu","partly"],2:["Parçalı bulutlu","partly"],3:["Kapalı","cloud"],45:["Sisli","fog"],48:["Kırağılı sis","fog"],
+  51:["Hafif çisenti","rain"],53:["Çisenti","rain"],55:["Yoğun çisenti","rain"],56:["Dondurucu çisenti","rain"],57:["Dondurucu çisenti","rain"],
+  61:["Hafif yağmur","rain"],63:["Yağmur","rain"],65:["Kuvvetli yağmur","rain"],66:["Dondurucu yağmur","rain"],67:["Dondurucu yağmur","rain"],
+  71:["Hafif kar","snow"],73:["Kar","snow"],75:["Yoğun kar","snow"],77:["Kar taneleri","snow"],80:["Sağanak","rain"],81:["Sağanak","rain"],82:["Kuvvetli sağanak","rain"],
+  85:["Kar sağanağı","snow"],86:["Kar sağanağı","snow"],95:["Gök gürültülü fırtına","storm"],96:["Dolulu fırtına","storm"],99:["Dolulu fırtına","storm"]};
+const WXI={
+  sun:'<circle cx="12" cy="12" r="4.2" class="wsun"/><path class="wsun" d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7"/>',
+  moon:'<path class="wmoon" d="M19.5 14.2A7.5 7.5 0 0 1 9.8 4.5a7.5 7.5 0 1 0 9.7 9.7Z"/>',
+  cloud:'<path d="M7.2 18.5h9.6a3.9 3.9 0 0 0 .5-7.8 5.6 5.6 0 0 0-10.8 1.1 3.4 3.4 0 0 0 .7 6.7Z"/>',
+  partly:'<g class="wsun"><circle cx="8" cy="8" r="3"/><path d="M8 2.5v1.2M2.5 8h1.2M4.1 4.1l.9.9M12.1 4.1l-.9.9"/></g><path d="M9 19.5h8.5a3.4 3.4 0 0 0 .4-6.8 5 5 0 0 0-9.6 1 3 3 0 0 0 .7 5.8Z"/>',
+  partlyn:'<path class="wmoon" d="M11.2 7.8A4.2 4.2 0 0 1 5.8 2.6a4.4 4.4 0 1 0 5.4 5.2Z"/><path d="M9 19.5h8.5a3.4 3.4 0 0 0 .4-6.8 5 5 0 0 0-9.6 1 3 3 0 0 0 .7 5.8Z"/>',
+  rain:'<path d="M7.2 15h9.6a3.6 3.6 0 0 0 .5-7.2 5.2 5.2 0 0 0-10 1 3.1 3.1 0 0 0 .7 6.2Z"/><path class="wrain" d="M8.5 17.5l-1 2.5M12.5 17.5l-1 2.5M16.5 17.5l-1 2.5"/>',
+  snow:'<path d="M7.2 15h9.6a3.6 3.6 0 0 0 .5-7.2 5.2 5.2 0 0 0-10 1 3.1 3.1 0 0 0 .7 6.2Z"/><g class="wsnow"><circle cx="8.5" cy="19" r=".9"/><circle cx="12" cy="20.5" r=".9"/><circle cx="15.5" cy="19" r=".9"/></g>',
+  storm:'<path d="M7.2 14.5h9.6a3.6 3.6 0 0 0 .5-7.2 5.2 5.2 0 0 0-10 1 3.1 3.1 0 0 0 .7 6.2Z"/><path class="wsun" d="m12.5 14.5-2 3.5h3l-2 3.5"/>',
+  fog:'<path d="M4 9h16M6 13h12M4 17h16"/>'};
+function wxIcon(code,day=1,cls=""){ let k=(WMO[code]||["","cloud"])[1]; if(!day&&k==="sun") k="moon"; if(!day&&k==="partly") k="partlyn";
+  return `<svg class="wxi ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${WXI[k]}</svg>`; }
+const wxLabel = c => (WMO[c]||["—"])[0];
+async function loadWeather(){
+  const w=D.weather||{lat:41.0846,lon:29.051}, key="panel.wx."+w.lat+","+w.lon;
+  try{ const c=JSON.parse(localStorage.getItem(key)||"null"); if(c && Date.now()-c.t<30*60e3){ WX=c.d; schedule(); return; } }catch(_){}
+  try{
+    const u=`https://api.open-meteo.com/v1/forecast?latitude=${w.lat}&longitude=${w.lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,relative_humidity_2m,is_day&hourly=temperature_2m,weather_code,precipitation_probability,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset&timezone=Europe%2FIstanbul&forecast_days=6`;
+    const r=await fetch(u); if(!r.ok) throw new Error(r.status);
+    WX=await r.json(); wxErr=false;
+    try{ localStorage.setItem(key,JSON.stringify({t:Date.now(),d:WX})); }catch(_){}
+  }catch(e){ wxErr=true; }
+  schedule();
+}
+function renderWxMini(){
+  const el=document.getElementById("wxMini"); if(!WX){ el.hidden=true; return; }
+  const c=WX.current, dl=WX.daily; el.hidden=false;
+  el.innerHTML=`${wxIcon(c.weather_code,c.is_day)}<span><b>${Math.round(c.temperature_2m)}°</b><small>${esc(wxLabel(c.weather_code))}</small></span>`;
+  el.title=`${(D.weather&&D.weather.name)||"İstanbul"} · bugün en yüksek ${Math.round(dl.temperature_2m_max[0])}°, en düşük ${Math.round(dl.temperature_2m_min[0])}°`;
+}
+function renderSocials(){
+  const el=document.getElementById("socials");
+  el.innerHTML=(D.socials||[]).map(x=>`<a class="soc" href="${url(x.url)}" target="_blank" rel="noopener" title="${esc(x.title)}" aria-label="${esc(x.title)}">${logo(favUrl(x.domain||hostOf(x.url)),x.title,"socl")}</a>`).join("");
+  el.hidden=!(D.socials||[]).length;
+}
+
+/* ---------- GANO hesaplayıcı ---------- */
+const GRADES=[["AA",4],["BA",3.5],["BB",3],["CB",2.5],["CC",2],["DC",1.5],["DD",1],["F",0]];
+const GP=Object.fromEntries(GRADES);
+let gpaSel={}; try{ gpaSel=JSON.parse(localStorage.getItem("panel.gpa")||"{}"); }catch(_){}
+const f2 = n => (Math.round(n*100+1e-9)/100).toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2});
+function gpaCalc(){
+  const base=D.settings.gpaBase||null; if(!base) return null;
+  let P=+base.points, C=+base.credits;
+  for(const c of D.courses){ if(c.repeatOf){ P-= (GP[c.repeatOf.grade]??0)*(+c.repeatOf.credit||0); C-= (+c.repeatOf.credit||0); } }
+  const P0=P, C0=C; let sP=0, sC=0, open=0;
+  for(const c of D.courses){ const cr=+c.credit||0, g=gpaSel[c.code]; if(g&&GP[g]!=null){ sP+=GP[g]*cr; sC+=cr; } else open+=cr; }
+  return { cur:+base.points/+base.credits, gpa:(P0+sP)/(C0+sC||1), spa:sC?sP/sC:null, P0, C0, sP, sC, open };
+}
+function gpaBody(){
+  const base=D.settings.gpaBase;
+  if(!base||!D.courses.length) return empty("GANO hesaplamak için BUIS'teki toplam kredi ve puanın gerekli.");
+  const r=gpaCalc(), delta=r.gpa-r.cur;
+  const rows=D.courses.map(c=>`<div class="gp-row"><div class="gp-c"><span class="code" style="--h:${hue(c.code)}">${esc(c.code)}</span><small>${esc(c.credit)} kredi${c.repeatOf?` · ${esc(c.repeatOf.code)} ${esc(c.repeatOf.grade)} yerine`:""}</small></div>
+    <div class="gp-g" role="radiogroup" aria-label="${esc(c.code)} notu" data-c="${esc(c.code)}">${GRADES.map(([g])=>`<button type="button" role="radio" aria-checked="${gpaSel[c.code]===g}" data-g="${g}" class="g-${g}">${g}</button>`).join("")}</div></div>`).join("");
+  // 2.00 ve 2.50 için gereken dönem ortalaması (seçilmeyen dersler için)
+  const need = t => { if(!r.open) return null; const x=(t*(r.C0+r.sC+r.open)-r.P0-r.sP)/r.open; return x; };
+  const hint = [2,2.5,3].map(t=>{const x=need(t); if(x==null) return ""; const txt= x<=0? "zaten sağlanıyor" : x>4? "bu dönem ulaşılamaz" : `kalan derslerde ort. <b>${f2(x)}</b>`; return `<li><span class="mono">${t.toFixed(2).replace(".",",")}</span> için ${txt}</li>`;}).join("");
+  return `<div class="gp-top">
+      <div><div class="label">Şu anki GANO</div><div class="big">${f2(r.cur)}</div></div>
+      <div class="gp-arrow" aria-hidden="true">→</div>
+      <div><div class="label">Dönem sonu GANO</div><div class="big ${delta>=0.005?"pos":delta<=-0.005?"neg":""}">${f2(r.gpa)}</div><small class="${delta>=0?"pos":"neg"}">${delta>=0?"+":""}${f2(Math.abs(delta)*Math.sign(delta)||0)}</small></div>
+      <div><div class="label">Dönem ortalaması</div><div class="big">${r.spa!=null?f2(r.spa):"—"}</div><small>${r.sC} / ${r.sC+r.open} kredi seçildi</small></div>
+    </div>
+    <div class="gp-list">${rows}</div>
+    <div class="gp-foot">${r.open?`<ul>${hint}</ul>`:`<span>Tüm notlar seçildi.</span>`}<button type="button" class="btn gp-reset">Temizle</button></div>`;
+}
+document.getElementById("v-okul").addEventListener("click",e=>{
+  const b=e.target.closest(".gp-g button"); const rs=e.target.closest(".gp-reset");
+  if(b){ const c=b.parentElement.dataset.c, g=b.dataset.g; gpaSel[c]= gpaSel[c]===g? undefined : g; }
+  else if(rs){ gpaSel={}; } else return;
+  try{ localStorage.setItem("panel.gpa",JSON.stringify(gpaSel)); }catch(_){}
+  const el=document.getElementById("gpaBody"); if(el) el.innerHTML=gpaBody();
+});
+
 /* ---------- Okul ---------- */
 function renderSchool(){
   const now=new Date(), td=dow(now), m=now.getHours()*60+now.getMinutes();
@@ -762,6 +955,7 @@ function renderSchool(){
     ${card("s5","Akademik takvim",calL,"Boğaziçi")}
     ${card("s7","Dersler ve materyaller",courseList)}
     ${card("s12","Mezuniyet yolu",grad,curr.length?"Bilgisayar Mühendisliği müfredatı":"")}
+    ${card("s7 gpacard","GANO hesaplayıcı",`<div id="gpaBody">${gpaBody()}</div>`,"Boğaziçi harf notu katsayıları")}
     ${card("s5","Devamsızlık",absL)}
   </div>`;
   const soon = D.exams.filter(e=>{const n=daysUntil(e.date);return n!=null&&n>=0&&n<=7;}).length + D.assignments.filter(a=>a.status!=="teslim"&&(()=>{const n=daysUntil(a.due);return n!=null&&n>=0&&n<=7;})()).length;
@@ -925,6 +1119,7 @@ function renderTop(){
   const mt=D.fb.find(x=>!x.score&&daysUntil(x.date)>=0);
   if(mt) hl.push(["fb","", "Maç", `${mt.opp} · ${when(daysUntil(mt.date))}${mt.time?" "+mt.time:""}`]);
   const bd=D.dates.map(x=>({...x,nd:x.yearly?nextYearly(x.date):x.date})).filter(x=>{const n=daysUntil(x.nd);return n!=null&&n>=0&&n<=7;}).sort((a,b)=>a.nd.localeCompare(b.nd))[0];
+  if(WX){ const dI=WX.daily, pr=dI.precipitation_probability_max[0]; if(pr>=50) hl.push(["bugun","blue","Hava",`Yağış ihtimali %${pr}, şemsiye al`]); }
   if(bd) hl.push(["bugun","mark","Yaklaşan gün", `${bd.title} · ${when(daysUntil(bd.nd))}`]);
   document.getElementById("highlights").innerHTML = hl.map(([tab,c,l,v])=>`<a href="#${tab}"><i class="${c}"></i><span>${esc(l)}</span><b>${esc(v)}</b></a>`).join("");
   const st=D.settings, a=parseD(st.termStart), b=parseD(st.termEnd), t=today0();
@@ -945,7 +1140,7 @@ document.getElementById("demoBar").addEventListener("click",e=>{
 });
 
 let raf=0;
-function renderAll(){ raf=0; renderTop(); renderToday(); renderSchool(); renderGrowth(); renderCareer(); renderProjects(); renderMedia(); renderFB(); renderFinance(); }
+function renderAll(){ raf=0; renderTop(); renderToday(); renderSchool(); renderGrowth(); renderCareer(); renderProjects(); renderMedia(); renderFB(); renderFinance(); renderWxMini(); renderSocials(); }
 const schedule = () => { if(!raf) raf=requestAnimationFrame(renderAll); };
 setInterval(schedule, 60000);
 
@@ -1015,6 +1210,7 @@ function cOpen(){ cmdk.hidden=false; cIn.value=""; cSel=0; cRender(); cIn.focus(
 function cClose(){ cmdk.hidden=true; }
 function cRun(i){ const x=cItems[i]; if(!x) return; cClose(); if(x.go) x.go(); else if(x.url) window.open(x.url,"_blank","noopener"); }
 document.getElementById("searchBtn").addEventListener("click",cOpen);
+document.getElementById("mSearch").addEventListener("click",cOpen);
 cIn.addEventListener("input",()=>{cSel=0;cRender();});
 cList.addEventListener("click",e=>{const it=e.target.closest(".cmdk-it"); if(it) cRun(+it.dataset.i);});
 cmdk.addEventListener("click",e=>{ if(e.target===cmdk) cClose(); });
@@ -1035,6 +1231,7 @@ document.addEventListener("keydown",e=>{
 
 /* ---------- Başlat ---------- */
 renderAll();
+loadWeather(); setInterval(loadWeather, 30*60e3);
 const syncEl=document.getElementById("sync"), syncTx=document.getElementById("syncText");
 if(window.PANEL_DATA){ syncEl.className="sync ok"; syncTx.textContent = RAW.updated? "Güncellendi: "+fmtD(RAW.updated,{day:"numeric",month:"short",year:"numeric"}) : "Veri yüklendi"; }
 else { syncEl.className="sync err"; syncTx.textContent="Veri bulunamadı"; }
@@ -1051,11 +1248,16 @@ if(RAW.built){ syncTx.textContent = "Eşitlendi: "+new Date(RAW.built).toLocaleS
     else document.documentElement.removeAttribute("data-theme");
     sw.querySelectorAll("button").forEach(b => b.setAttribute("aria-checked", b.dataset.t === t));
   };
-  apply(get());
+  const mBtn = document.getElementById("mTheme");
+  const ICO = { system: sw.querySelector('[data-t="system"]').innerHTML, light: sw.querySelector('[data-t="light"]').innerHTML, dark: sw.querySelector('[data-t="dark"]').innerHTML };
+  const apply0 = apply;
+  const applyAll = t => { apply0(t); mBtn.innerHTML = ICO[t]; mBtn.title = { system: "Tema: sistem", light: "Tema: açık", dark: "Tema: koyu" }[t]; };
+  applyAll(get());
+  mBtn.addEventListener("click", () => { const n = { system: "light", light: "dark", dark: "system" }[get()]; try { localStorage.setItem("panel.theme", n); } catch (_) {} applyAll(n); });
   sw.addEventListener("click", e => {
     const b = e.target.closest("button"); if (!b) return;
     try { localStorage.setItem("panel.theme", b.dataset.t); } catch (_) {}
-    apply(b.dataset.t);
+    applyAll(b.dataset.t);
   });
 })();
 </script>

@@ -25,6 +25,11 @@ Emir'in kişisel kontrol paneli (Boğaziçi Bilgisayar Müh. 2. sınıf). Kullan
   Basketbol Süper Ligi ve Efeler Ligi `data.js` → `fbFixed[]` içinde sabit (TheSportsDB'den bir kez alındı; canlı çekim istek sınırı yüzünden çok yavaştı).
   Her maçta `logo` (rakip arması URL'si) var. Kadın voleybolu (Sultanlar Ligi) açık kaynaklarda yok.
 - Logolar: şirketler/bağlantılar Google favicon servisi (`domain` alanı ya da URL'nin alan adı), okul logosu bogazici.edu.tr favicon'u. Yüklenmezse harf rozeti.
+- Hava: saatin yanında sade özet (Open-Meteo, tarayıcıdan, 30 dk `localStorage` önbellek); konum `data.weather {name,lat,lon}`. Yağış ≥%50 ise öne çıkanlarda "şemsiye al".
+- Sosyal medya: `data.socials[] {title,url,domain}` sol panelin altında (telefonda gizli).
+- GANO hesaplayıcı (Okul): `settings.gpaBase {credits, points}` (BUIS "Overall Attempted / Overall Points"), derslerde `credit` ve tekrar için `repeatOf {code,grade,credit}`;
+  Boğaziçi katsayıları AA 4 … F 0, kredi ağırlıklı, tekrarda eski not çıkar. Seçimler `localStorage panel.gpa`.
+- Telefon (≤860px): altta 8 simgeli sekme çubuğu, üstte ince başlık (arama + tema döngüsü); karşılama alanı yalnızca Bugün'de.
 - Finans: `settings.monthlyBudget` her ay varsayılan bütçe; abonelikler (aylık karşılığı) giderlere otomatik eklenir (`monthExp`).
 - `curriculum[]` status'ta `failed` (kırmızı) ve `grade` (harf notu) da olabilir; `settings.advisor`, `advisorEmail`.
 - Spotify: `spotify[]` öğesinde `url` yeter; build oEmbed ile adı ve kapağı alır (`img/spotify/<id>.jpg`, depoda yedeği var).
