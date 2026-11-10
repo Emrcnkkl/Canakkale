@@ -299,6 +299,61 @@ body{min-height:100vh;-webkit-font-smoothing:antialiased}
 .links a:hover,.tile:hover{border-color:var(--accent)}
 .lock{background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px)}
 .lock-card{background:linear-gradient(var(--surface-solid),var(--surface-solid)) padding-box,var(--hero-ring) border-box;border:1px solid transparent;box-shadow:var(--shadow);border-radius:20px}
+/* ---------- Etiketler, karolar, listeler ---------- */
+.chip{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 8px 0 7px;border-radius:6px;font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  background:transparent;color:var(--muted);border:1px solid var(--line);white-space:nowrap;vertical-align:middle}
+.chip::before{content:"";width:6px;height:6px;border-radius:2px;background:currentColor;flex:none}
+.chip.crit,.chip.warn,.chip.good,.chip.acc,.chip.mark{background:color-mix(in srgb,currentColor 9%,transparent);border-color:color-mix(in srgb,currentColor 28%,transparent)}
+.chip.crit{color:var(--crit)} .chip.warn{color:var(--warn)} .chip.good{color:var(--good)} .chip.acc{color:var(--accent-2)} .chip.mark{color:var(--mark)}
+.row .d .chip{height:18px;font-size:9.5px;padding:0 6px 0 5px;margin-right:8px;gap:5px}
+.row .d .chip::before{width:5px;height:5px}
+/* geri sayım karosu */
+.cd{flex:none;display:inline-grid;place-items:center;align-content:center;min-width:48px;height:42px;padding:0 6px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);line-height:1;gap:3px}
+.cd b{font-family:var(--f-display);font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.cd small{font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.cd.word b{font-size:12px;letter-spacing:.02em}
+.cd.crit{border-color:color-mix(in srgb,var(--crit) 40%,transparent);background:color-mix(in srgb,var(--crit) 10%,transparent);color:var(--crit)}
+.cd.warn{border-color:color-mix(in srgb,var(--warn) 38%,transparent);background:color-mix(in srgb,var(--warn) 9%,transparent);color:var(--warn)}
+.cd.far b{color:var(--ink)}
+.cd.past{opacity:.6} .cd.past small{font-size:8px}
+/* takvim yaprağı */
+.dt{flex:none;width:46px;display:inline-flex;flex-direction:column;align-items:center;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--surface-solid);line-height:1}
+.dt small:first-child{width:100%;text-align:center;padding:3px 0 2px;font-size:8.5px;font-weight:700;letter-spacing:.12em;color:var(--accent);background:var(--accent-soft)}
+.dt b{font-family:var(--f-display);font-size:18px;font-weight:700;padding:4px 0 1px;font-variant-numeric:tabular-nums}
+.dt small:last-child{font-size:9px;color:var(--muted);padding-bottom:4px;font-family:var(--f-mono)}
+.dt.on{border-color:var(--accent)} .dt.on small:first-child{background:var(--accent);color:var(--bg)}
+.row.done{opacity:.5}
+.list .row{gap:14px;padding:11px 0}
+.list .row .t{font-size:14px}
+.list .row .d{margin-top:2px;display:flex;align-items:center;flex-wrap:wrap}
+/* ders kodu rozeti */
+.code{flex:none;font-family:var(--f-mono);font-size:11.5px;font-weight:600;padding:5px 8px;border-radius:7px;color:hsl(var(--h) 65% 33%);background:hsl(var(--h) 60% 50% / .1);border:1px solid hsl(var(--h) 60% 50% / .28)}
+:root[data-theme="dark"] .code{color:hsl(var(--h) 70% 72%)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .code{color:hsl(var(--h) 70% 72%)}}
+/* spor rozeti ve sonuç */
+.spb{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center}
+.spb svg{width:17px;height:17px}
+.spb.fb-fut{background:#0E1E5B;color:#FFED00}
+.spb.fb-bas{background:#FFED00;color:#0E1E5B}
+.spb.fb-vol{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--line-strong)}
+.res{flex:none;display:inline-flex;align-items:stretch;height:28px;border-radius:8px;overflow:hidden;border:1px solid var(--line);font-variant-numeric:tabular-nums}
+.res i{font-style:normal;display:grid;place-items:center;width:24px;font-size:11px;font-weight:700;color:#fff}
+.res b{display:flex;align-items:center;gap:3px;padding:0 9px;font-family:var(--f-mono);font-size:12.5px;background:var(--surface-2)}
+.res b em{font-style:normal;color:var(--muted)}
+.res.win i{background:var(--good)} .res.loss i{background:var(--crit)} .res.draw i{background:var(--warn)}
+/* segment seçici */
+.seg{display:inline-flex;gap:2px;padding:3px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);margin-bottom:14px}
+.seg button{border-radius:7px;padding:5px 11px;background:transparent}
+.seg button[aria-pressed="true"]{background:var(--surface-solid);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.2)}
+/* tablolar */
+.tbl{border:1px solid var(--line);border-radius:12px;overflow:auto}
+table{font-size:13px}
+th{padding:10px 14px;background:var(--surface-2);font-size:10.5px;letter-spacing:.1em}
+td{padding:11px 14px}
+tbody tr:hover td{background:color-mix(in srgb,var(--surface-2) 70%,transparent)}
+/* öne çıkanlar şeridi daha köşeli */
+.hl a{border-radius:10px}
+.links a{border-radius:10px}
 /* Giriş hareketi */
 @keyframes rise{from{opacity:.25;transform:translateY(10px)}to{opacity:1;transform:none}}
 .view:not([hidden])>.grid>*,.view:not([hidden])>.card,.view:not([hidden])>.pgrid>*{animation:rise .5s cubic-bezier(.2,.7,.2,1) both}
@@ -445,9 +500,17 @@ const pct = (a,b) => b>0? Math.max(0,Math.min(100,a/b*100)) : 0;
 const dow = d => ((d.getDay()+6)%7)+1;
 function countdown(n){
   if(n==null) return "";
-  if(n<0) return `<span class="chip">${-n} gün önce</span>`;
-  const cls = n<=3?"crit":n<=7?"warn":"acc";
-  return `<span class="chip ${cls}">${n===0?"Bugün":n===1?"Yarın":n+" gün"}</span>`;
+  if(n<0) return `<span class="cd past" title="${-n} gün önce"><b>${-n}</b><small>gün önce</small></span>`;
+  const cls = n<=3?"crit":n<=7?"warn":"far";
+  if(n===0) return `<span class="cd ${cls} word"><b>Bugün</b></span>`;
+  if(n===1) return `<span class="cd ${cls} word"><b>Yarın</b></span>`;
+  return `<span class="cd ${cls}"><b>${n}</b><small>gün</small></span>`;
+}
+// Takvim yaprağı: gün + ay (+ isteğe bağlı saat)
+function dtile(date,time){
+  const d=parseD(date); if(!d) return "";
+  const today=daysUntil(date)===0;
+  return `<span class="dt${today?" on":""}"><small>${esc(d.toLocaleDateString("tr-TR",{month:"short"}).replace(".","").toLocaleUpperCase("tr-TR"))}</small><b>${d.getDate()}</b><small>${esc(time||d.toLocaleDateString("tr-TR",{weekday:"short"}).replace(".",""))}</small></span>`;
 }
 function nextYearly(s){ // MM-DD ya da YYYY-MM-DD → bir sonraki yıl dönümü
   const m=/(\d{2})-(\d{2})$/.exec(s||""); if(!m) return null;
@@ -503,7 +566,7 @@ function renderToday(){
     }).join("")}</div>`
     : D.courses.length ? empty("Bugün ders yok.") : empty("Ders programın henüz yok. Bana şöyle yazabilirsin:","Pazartesi 09:00–11:50 Mikroiktisat (ECON201), B-204, Doç. Dr. Yılmaz");
   const up=upcoming(21);
-  const ulist = up.length? `<div class="list">${up.slice(0,8).map(i=>`<div class="row"><div class="main"><div class="t">${esc(i.title)}</div><div class="d">${esc(fmtDW(i.date))}${i.d?" · "+esc(i.d):""}</div></div><span class="chip ${i.cls}">${esc(i.kind)}</span>${countdown(daysUntil(i.date))}</div>`).join("")}</div>`
+  const ulist = up.length? `<div class="list">${up.slice(0,8).map(i=>`<div class="row">${dtile(i.date)}<div class="main"><div class="t">${esc(i.title)}</div><div class="d"><span class="chip ${i.cls}">${esc(i.kind)}</span>${i.d?esc(i.d):""}</div></div>${countdown(daysUntil(i.date))}</div>`).join("")}</div>`
     : empty("Önümüzdeki 3 haftada sınav, teslim ya da önemli bir gün yok.");
   const tiles = D.spotify.length? `<div class="tiles">${D.spotify.map(s=>`<a class="tile" href="${url(s.url)}" target="_blank" rel="noopener" title="${esc(s.title)} — Spotify'da aç">${s.cover?`<img class="cover" src="${esc(s.cover)}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'cover ph',style:'--h:${hue(s.title)}'}))">`:`<span class="cover ph" style="--h:${hue(s.title)}"></span>`}<span class="tx"><b>${esc(s.title)}</b><span>${esc(s.subtitle||"Çalma listesi")}</span></span><span class="play"><svg viewBox="0 0 12 12"><path d="M2 1l9 5-9 5z"/></svg></span></a>`).join("")}</div>`
     : empty("Hızlı çal listen boş. Spotify'da çalma listesinde Paylaş → Bağlantıyı kopyala ile linki bana gönder.");
@@ -537,10 +600,14 @@ function renderToday(){
 /* ---------- Fenerbahçe ---------- */
 const SPORT={Futbol:"fb-fut",Basketbol:"fb-bas",Voleybol:"fb-vol"};
 function fbResult(m){ if(!m.score) return ""; const [a,b]=m.score.split("-").map(Number); if(isNaN(a)||isNaN(b)) return "";
-  const r=a>b?["G","good"]:a<b?["M","crit"]:["B","warn"]; return `<span class="chip ${r[1]}" title="${r[0]==="G"?"Galibiyet":r[0]==="M"?"Mağlubiyet":"Beraberlik"}">${r[0]} ${esc(m.score)}</span>`; }
+  const r=a>b?["G","win","Galibiyet"]:a<b?["M","loss","Mağlubiyet"]:["B","draw","Beraberlik"]; return `<span class="res ${r[1]}" title="${r[2]}"><i>${r[0]}</i><b>${esc(a)}<em>–</em>${esc(b)}</b></span>`; }
+const SPI={Futbol:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="m12 7.5 3.6 2.6-1.4 4.2H9.8l-1.4-4.2L12 7.5Z"/><path d="M12 3.5v4M20.3 10.1l-4.7 0M3.7 10.1h4.7M7 19l2.8-4.7M17 19l-2.8-4.7"/></svg>',
+  Basketbol:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5v17M6 6c3 2.5 3 9.5 0 12M18 6c-3 2.5-3 9.5 0 12"/></svg>',
+  Voleybol:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5c0 4 1.5 7 5 8.5M12 12c-3.5 1.5-6 4-6.5 7M12 12c3 2 7 2 8.3.5M12 3.5C8 5 5 8 3.6 11"/></svg>'};
+const spBadge = m => `<span class="spb ${SPORT[m.sport]||""}" title="${esc(m.sport)} · ${esc(m.comp)}">${SPI[m.sport]||esc(m.sport[0])}</span>`;
 function fbRow(m,showDate=true){
-  if(!showDate) return `<div class="row"><span class="chip sp sm ${SPORT[m.sport]||""}" title="${esc(m.sport)}">${esc(m.sport[0])}</span>${logo(m.logo,m.opp,"tlogo")}<div class="main"><div class="t">${esc(m.opp)}</div><div class="d">${esc(fmtD(m.date,{day:"numeric",month:"short"}))} · ${esc(m.comp)} · ${m.home?"İç saha":"Deplasman"}</div></div>${fbResult(m)}</div>`;
-  return `<div class="row"><span class="chip sp ${SPORT[m.sport]||""}">${esc(m.sport)}</span>${showDate?`<span class="mono" style="width:112px;flex:none;font-size:12.5px">${esc(fmtD(m.date,{day:"numeric",month:"short",weekday:"short"}))}${m.time?" "+esc(m.time):""}</span>`:""}${logo(m.logo,m.opp,"tlogo")}<div class="main"><div class="t">${m.home?`Fenerbahçe – ${esc(m.opp)}`:`${esc(m.opp)} – Fenerbahçe`}</div><div class="d">${esc(m.comp)} · ${m.home?"İç saha":"Deplasman"}</div></div>${m.score?fbResult(m):countdown(daysUntil(m.date))}</div>`;
+  if(!showDate) return `<div class="row">${spBadge(m)}${logo(m.logo,m.opp,"tlogo")}<div class="main"><div class="t">${esc(m.opp)}</div><div class="d">${esc(fmtD(m.date,{day:"numeric",month:"short"}))} · ${esc(m.comp)} · ${m.home?"İç saha":"Deplasman"}</div></div>${fbResult(m)}</div>`;
+  return `<div class="row">${dtile(m.date,m.time)}${spBadge(m)}${logo(m.logo,m.opp,"tlogo")}<div class="main"><div class="t">${m.home?`Fenerbahçe – ${esc(m.opp)}`:`${esc(m.opp)} – Fenerbahçe`}</div><div class="d">${esc(m.comp)} · ${m.home?"İç saha":"Deplasman"}</div></div>${m.score?fbResult(m):countdown(daysUntil(m.date))}</div>`;
 }
 let fbFilter="Tümü";
 function renderFB(){
@@ -584,13 +651,14 @@ function renderSchool(){
   } else week = empty("Ders programı boş. Derslerini gün ve saatleriyle bana yaz:","ECON201 Mikroiktisat — Pzt 09:00–11:50 B-204, Per 13:00–14:50 B-110 · 6 AKTS · Doç. Dr. Yılmaz");
 
   const exams=[...D.exams].sort((a,b)=>(a.date||"").localeCompare(b.date||""));
-  const examT = exams.length? `<div class="tbl"><table><thead><tr><th>Ders</th><th>Tür</th><th>Tarih</th><th>Yer</th><th></th></tr></thead><tbody>${exams.map(e=>{const n=daysUntil(e.date);return `<tr style="${n<0?"opacity:.5":""}"><td><b>${esc(e.course)}</b></td><td><span class="chip ${/final/i.test(e.type)?"crit":/vize|ara/i.test(e.type)?"warn":""}">${esc(e.type||"Sınav")}</span></td><td class="mono">${esc(fmtDW(e.date))} ${esc(e.time||"")}</td><td>${esc(e.room||"")}</td><td>${n!=null&&n>=0?countdown(n):e.grade!=null?`<span class="chip good">${esc(e.grade)}</span>`:""}</td></tr>`;}).join("")}</tbody></table></div>`
+  const examT = exams.length? `<div class="list">${exams.map(e=>{const n=daysUntil(e.date), cls=/final/i.test(e.type)?"crit":/vize|ara/i.test(e.type)?"warn":"";
+      return `<div class="row${n<0?" done":""}">${dtile(e.date)}<span class="code" style="--h:${hue(e.course)}">${esc(e.course)}</span><div class="main"><div class="t">${esc(e.type||"Sınav")}</div><div class="d">${esc([fmtD(e.date,{weekday:"long"}),e.time,e.room].filter(Boolean).join(" · "))}</div></div>${n!=null&&n>=0?countdown(n):e.grade!=null?`<span class="chip good">${esc(e.grade)}</span>`:`<span class="chip">Tamamlandı</span>`}</div>`;}).join("")}</div>`
     : empty("Vize/final tarihlerin yok.","ECON201 vize 18 Kasım 10:00, A-101");
 
   const mdl=D.moodle.filter(m=>{const n=daysUntil(m.date);return n!=null&&n>=-3;}).map(m=>({course:m.course,title:m.title,due:m.date,time:m.time,status:"moodle",url:m.url}));
   const asg=[...D.assignments,...mdl].sort((a,b)=>(a.status==="teslim")-(b.status==="teslim")||(a.due||"").localeCompare(b.due||""));
   const ST={yapilacak:["Yapılacak",""],devam:["Devam ediyor","acc"],teslim:["Teslim edildi","good"],moodle:["Moodle","mark"]};
-  const asgL = asg.length? `<div class="list">${asg.map(a=>{const s=ST[a.status]||ST.yapilacak;return `<div class="row" style="${a.status==="teslim"?"opacity:.55":""}"><span class="sw" style="--h:${hue(a.course)}"></span><div class="main"><div class="t">${a.url?`<a href="${url(a.url)}" target="_blank" rel="noopener" style="text-decoration:none">${esc(a.title)}</a>`:esc(a.title)}</div><div class="d">${esc(a.course||"")} · ${esc(fmtDW(a.due))}${a.time?" "+esc(a.time):""}</div></div><span class="chip ${s[1]}">${s[0]}</span>${a.status!=="teslim"?countdown(daysUntil(a.due)):""}</div>`;}).join("")}</div>`
+  const asgL = asg.length? `<div class="list">${asg.map(a=>{const s=ST[a.status]||ST.yapilacak;return `<div class="row${a.status==="teslim"?" done":""}">${dtile(a.due,a.time)}<div class="main"><div class="t">${a.url?`<a href="${url(a.url)}" target="_blank" rel="noopener" style="text-decoration:none">${esc(a.title)}</a>`:esc(a.title)}</div><div class="d">${esc(a.course||"")} · ${esc(fmtDW(a.due))}${a.time?" "+esc(a.time):""}</div></div><span class="chip ${s[1]}">${s[0]}</span>${a.status!=="teslim"?countdown(daysUntil(a.due)):""}</div>`;}).join("")}</div>`
     : empty("Ödev ya da proje teslimi yok.","CMPE220 ödev 3, teslim 22 Kasım 23:59");
 
   const calAll=[...D.calendar].sort((a,b)=>(a.date||"").localeCompare(b.date||""));
