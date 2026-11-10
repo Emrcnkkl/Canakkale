@@ -4,8 +4,8 @@ window.PANEL_DATA = {
   updated: "2026-11-10",
 
   settings: {
-    name: "",            // selamlamada görünür
-    school: "",          // sol üstte görünür
+    name: "Emir",        // selamlamada görünür
+    school: "Boğaziçi Üniversitesi · Bilgisayar Mühendisliği, 2. sınıf", // sol üstte görünür
     termName: "",        // ör. "2026–27 Güz"
     termStart: "",       // dönem başlangıcı
     termEnd: "",         // dönem sonu
@@ -40,6 +40,12 @@ window.PANEL_DATA = {
       site: "https://emrcnkkl.github.io/quant-bot/",
       repo: "https://github.com/Emrcnkkl/quant-bot",
       updated: "2026-11-10"
+    },
+    {
+      name: "nxt",
+      status: "aktif",
+      desc: "Lead the Next",
+      repo: "https://github.com/Emrcnkkl/leadthenext-astro"
     },
     {
       name: "anlik_bot",
