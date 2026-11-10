@@ -120,11 +120,11 @@ window.PANEL_DATA = {
   // Finans
   finance: [],       // ay ay {month: "2026-11", income:[{label, amount}], expenses:[{label, amount, category}]}
   subscriptions: [
-    { name: "Spotify", amount: null, cycle: "aylik" },
-    { name: "Canva", amount: null, cycle: "aylik" },
-    { name: "Claude", amount: null, cycle: "aylik" },
-    { name: "Gemini", amount: null, cycle: "aylik" },
-    { name: "iCloud", amount: null, cycle: "aylik" }
+    { name: "Spotify", domain: "spotify.com", amount: null, cycle: "aylik" },
+    { name: "Canva", domain: "canva.com", amount: null, cycle: "aylik" },
+    { name: "Claude", domain: "claude.ai", amount: null, cycle: "aylik" },
+    { name: "Gemini", domain: "gemini.google.com", amount: null, cycle: "aylik" },
+    { name: "iCloud", domain: "icloud.com", amount: null, cycle: "aylik" }
   ], // {name, amount, cycle: "aylik"|"yillik", day (aylık: ayın kaçı), date (yıllık: AA-GG)}
   savings: [],       // {title, target, current, deadline}
 
@@ -140,5 +140,52 @@ window.PANEL_DATA = {
     { title: "quant-bot", url: "https://emrcnkkl.github.io/quant-bot/" },
     { title: "Spotify", url: "https://open.spotify.com/" }
   ],                 // {title, url}
+  // Fenerbahçe Basketbol Süper Ligi + Efeler Ligi (erkek voleybol) 2026-27 fikstürü — TheSportsDB'den 10 Kasım 2026'da alındı, sabit.
+  // Futbol ve EuroLeague build sırasında otomatik gelir. Tarih değişikliği olursa buradan güncellenir.
+  fbFixed: [
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2026-09-27", "opp": "Bahçeşehir Koleji SK", "logo": "https://r2.thesportsdb.com/images/media/team/badge/twgvxv1726910272.png", "home": false, "score": "83-98"},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2026-10-02", "time": "18:00", "opp": "Manisa BB", "logo": "https://r2.thesportsdb.com/images/media/team/badge/dee2ms1740771670.png", "home": true},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2026-10-10", "opp": "Çayirova", "logo": "https://r2.thesportsdb.com/images/media/team/badge/4adcmh1757583553.png", "home": false, "score": "100-85"},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2026-10-18", "opp": "Petkim Spor", "logo": "https://r2.thesportsdb.com/images/media/team/badge/hlwgit1727704181.png", "home": true, "score": "77-82"},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2026-10-25", "opp": "Karşıyaka Basket", "logo": "https://r2.thesportsdb.com/images/media/team/badge/mhh1y41739692642.png", "home": false, "score": "97-72"},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2026-11-01", "opp": "Tofaş SK", "logo": "https://r2.thesportsdb.com/images/media/team/badge/l3t7p61698244996.png", "home": true, "score": "88-77"},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2026-11-07", "opp": "Bursaspor Basketbol", "logo": "https://r2.thesportsdb.com/images/media/team/badge/mwt5rk1678898996.png", "home": false, "score": "78-59"},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2026-11-15", "time": "20:30", "opp": "Anadolu Efes SK", "logo": "https://r2.thesportsdb.com/images/media/team/badge/uldz0d1782050729.png", "home": true},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2026-11-22", "time": "20:30", "opp": "Besiktas Basketbol", "logo": "https://r2.thesportsdb.com/images/media/team/badge/rx0o811667119583.png", "home": false},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2026-12-06", "time": "13:00", "opp": "Trabzonspor BK", "logo": "https://r2.thesportsdb.com/images/media/team/badge/wmu4u61784718489.png", "home": true},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2026-12-11", "time": "19:00", "opp": "Bordo Sportif", "logo": "https://r2.thesportsdb.com/images/media/team/badge/iw11301757584059.png", "home": false},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2026-12-20", "time": "15:30", "opp": "Türk Telekom BK", "logo": "https://r2.thesportsdb.com/images/media/team/badge/89j3fk1726910405.png", "home": true},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2026-12-25", "time": "19:00", "opp": "Merkezefendi Belediyesi Denizli Basket", "logo": "https://r2.thesportsdb.com/images/media/team/badge/x2pms71784573128.png", "home": false},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2027-01-01", "time": "19:00", "opp": "Galatasaray SK", "logo": "https://r2.thesportsdb.com/images/media/team/badge/s0648j1688557537.png", "home": true},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2027-01-08", "time": "19:00", "opp": "Esenler Erokspor Basketball", "logo": "https://r2.thesportsdb.com/images/media/team/badge/cddejp1758793966.png", "home": false},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2027-01-15", "time": "19:00", "opp": "Bahçeşehir Koleji SK", "logo": "https://r2.thesportsdb.com/images/media/team/badge/twgvxv1726910272.png", "home": true},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2027-01-22", "time": "19:00", "opp": "Manisa BB", "logo": "https://r2.thesportsdb.com/images/media/team/badge/dee2ms1740771670.png", "home": false},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2027-01-29", "time": "19:00", "opp": "Çayirova", "logo": "https://r2.thesportsdb.com/images/media/team/badge/4adcmh1757583553.png", "home": true},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2027-02-05", "time": "19:00", "opp": "Petkim Spor", "logo": "https://r2.thesportsdb.com/images/media/team/badge/hlwgit1727704181.png", "home": false},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2027-02-12", "time": "19:00", "opp": "Karşıyaka Basket", "logo": "https://r2.thesportsdb.com/images/media/team/badge/mhh1y41739692642.png", "home": true},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2027-03-05", "time": "19:00", "opp": "Tofaş SK", "logo": "https://r2.thesportsdb.com/images/media/team/badge/l3t7p61698244996.png", "home": false},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2027-03-12", "time": "19:00", "opp": "Bursaspor Basketbol", "logo": "https://r2.thesportsdb.com/images/media/team/badge/mwt5rk1678898996.png", "home": true},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2027-03-19", "time": "19:00", "opp": "Anadolu Efes SK", "logo": "https://r2.thesportsdb.com/images/media/team/badge/uldz0d1782050729.png", "home": false},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2027-03-26", "time": "19:00", "opp": "Besiktas Basketbol", "logo": "https://r2.thesportsdb.com/images/media/team/badge/rx0o811667119583.png", "home": true},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2027-04-02", "time": "18:00", "opp": "Trabzonspor BK", "logo": "https://r2.thesportsdb.com/images/media/team/badge/wmu4u61784718489.png", "home": false},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2027-04-09", "time": "18:00", "opp": "Bordo Sportif", "logo": "https://r2.thesportsdb.com/images/media/team/badge/iw11301757584059.png", "home": true},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2027-04-16", "time": "18:00", "opp": "Türk Telekom BK", "logo": "https://r2.thesportsdb.com/images/media/team/badge/89j3fk1726910405.png", "home": false},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2027-04-23", "time": "18:00", "opp": "Merkezefendi Belediyesi Denizli Basket", "logo": "https://r2.thesportsdb.com/images/media/team/badge/x2pms71784573128.png", "home": true},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2027-04-30", "time": "18:00", "opp": "Galatasaray SK", "logo": "https://r2.thesportsdb.com/images/media/team/badge/s0648j1688557537.png", "home": false},
+    {"sport": "Basketbol", "comp": "Basketbol Süper Ligi", "date": "2027-05-07", "time": "18:00", "opp": "Esenler Erokspor Basketball", "logo": "https://r2.thesportsdb.com/images/media/team/badge/cddejp1758793966.png", "home": true},
+    {"sport": "Voleybol", "comp": "Efeler Ligi", "date": "2026-10-17", "opp": "Ziraat Bankası", "logo": "https://r2.thesportsdb.com/images/media/team/badge/dfuq2s1573075752.png", "home": true, "score": "0-3"},
+    {"sport": "Voleybol", "comp": "Efeler Ligi", "date": "2026-10-24", "opp": "Gaziantep Gençlik", "logo": "https://r2.thesportsdb.com/images/media/team/badge/nqwvxn1785528780.png", "home": false, "score": "3-2"},
+    {"sport": "Voleybol", "comp": "Efeler Ligi", "date": "2026-10-27", "opp": "Alanya Belediyespor", "logo": "https://r2.thesportsdb.com/images/media/team/badge/0lsvxm1785528607.png", "home": true, "score": "3-0"},
+    {"sport": "Voleybol", "comp": "Efeler Ligi", "date": "2026-10-31", "opp": "İstanbul BB", "logo": "https://r2.thesportsdb.com/images/media/team/badge/gfq8pe1785528693.png", "home": false, "score": "3-1"},
+    {"sport": "Voleybol", "comp": "Efeler Ligi", "date": "2026-11-07", "opp": "Gebze Belediyespor", "logo": "https://r2.thesportsdb.com/images/media/team/badge/lt0phu1785528446.png", "home": true, "score": "3-1"},
+    {"sport": "Voleybol", "comp": "Efeler Ligi", "date": "2026-11-14", "time": "19:00", "opp": "Galatasaray Volleyball", "logo": "https://r2.thesportsdb.com/images/media/team/badge/cy4g6t1573134780.png", "home": false},
+    {"sport": "Voleybol", "comp": "Efeler Ligi", "date": "2026-11-21", "time": "19:00", "opp": "Spor Toto", "logo": "https://r2.thesportsdb.com/images/media/team/badge/ng9o871624239562.png", "home": true},
+    {"sport": "Voleybol", "comp": "Efeler Ligi", "date": "2026-11-28", "time": "14:00", "opp": "Halkbank Ankara", "logo": "https://r2.thesportsdb.com/images/media/team/badge/iycd3t1785529388.png", "home": false},
+    {"sport": "Voleybol", "comp": "Efeler Ligi", "date": "2026-12-05", "time": "16:30", "opp": "Onikişubat Belediyespor", "logo": "https://r2.thesportsdb.com/images/media/team/badge/qzgsxx1785529530.png", "home": true},
+    {"sport": "Voleybol", "comp": "Efeler Ligi", "date": "2026-12-12", "time": "14:00", "opp": "Sungurlu Belediyespor", "logo": "https://r2.thesportsdb.com/images/media/team/badge/3qcvh21785529650.png", "home": false},
+    {"sport": "Voleybol", "comp": "Efeler Ligi", "date": "2026-12-22", "time": "14:00", "opp": "İstanbul GSK", "logo": "https://r2.thesportsdb.com/images/media/team/badge/9xb39l1785529120.png", "home": false},
+    {"sport": "Voleybol", "comp": "Efeler Ligi", "date": "2026-12-26", "time": "16:00", "opp": "Altekma", "logo": "https://r2.thesportsdb.com/images/media/team/badge/3cg5qp1785529321.png", "home": false}
+  ],
+
   dates: []          // önemli günler {title, date, yearly: true|false, note}  (yıllıksa date "AA-GG" olabilir)
 };

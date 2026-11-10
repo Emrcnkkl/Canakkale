@@ -158,7 +158,7 @@ if (process.env.MOODLE_ICS_URL) {
 }
 /* ---------- Fenerbahçe maç takvimi ---------- */
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-const getJSON = async (u, tries = 3) => {
+const getJSON = async (u, tries = 2) => {
   for (let i = 0; ; i++) {
     try {
       const r = await fetch(u, { headers: { "user-agent": "panel-build/1.0" }, signal: AbortSignal.timeout(30000) });
@@ -189,7 +189,7 @@ async function fbFootball() {
       const done = c.status?.type?.completed;
       const sc = x => x.score?.displayValue ?? x.score?.value ?? x.score;
       out.push({ sport: "Futbol", comp: comp(e.league?.name || c.league?.name), date, time: done ? undefined : time,
-        opp: op.team.displayName, home: me.homeAway === "home", score: done ? `${sc(me)}-${sc(op)}` : undefined });
+        opp: op.team.displayName, logo: op.team.logos?.[0]?.href || op.team.logo, home: me.homeAway === "home", score: done ? `${sc(me)}-${sc(op)}` : undefined });
     }
   }
   return out;
@@ -201,43 +201,14 @@ async function fbEuroleague() {
   return (d.data || []).map(g => {
     const home = g.local?.club?.code === "ULK", me = home ? g.local : g.road, op = home ? g.road : g.local;
     const { date, time } = trTime(g.utcDate);
-    return { sport: "Basketbol", comp: "EuroLeague", date, time: g.played ? undefined : time, opp: op?.club?.name || "",
+    return { sport: "Basketbol", comp: "EuroLeague", date, time: g.played ? undefined : time, opp: op?.club?.name || "", logo: op?.club?.images?.crest,
       home, score: g.played ? `${me?.score}-${op?.score}` : undefined };
   });
 }
 
-// TheSportsDB (ücretsiz anahtar): tura göre çeker; bugüne en yakın turu ikili aramayla bulur.
-async function fbSportsDB(leagueId, sport, teamWord, maxRound) {
-  const [y1, y2] = season(), cache = new Map();
-  const round = async r => {
-    if (!cache.has(r)) { await sleep(2200); const d = await getJSON(`https://www.thesportsdb.com/api/v1/json/123/eventsround.php?id=${leagueId}&r=${r}&s=${y1}-${y2}`); cache.set(r, d.events || []); }
-    return cache.get(r);
-  };
-  const firstDate = evs => evs.map(e => e.dateEvent).sort()[0];
-  let lo = 1, hi = maxRound;
-  const todayStr = ymd(new Date(today));
-  while (lo < hi) { // bugünden sonraki ilk tur
-    const mid = (lo + hi) >> 1, evs = await round(mid);
-    if (!evs.length || firstDate(evs) >= todayStr) hi = mid; else lo = mid + 1;
-  }
-  const out = [];
-  for (let r = Math.max(1, lo - 2); r <= Math.min(maxRound, lo + 8); r++) {
-    for (const e of await round(r)) {
-      if (!e.strEvent.includes(teamWord)) continue;
-      const home = e.strHomeTeam.includes(teamWord);
-      const { date, time } = e.strTimestamp ? trTime(e.strTimestamp + "Z") : { date: e.dateEvent };
-      const played = e.intHomeScore != null && e.intAwayScore != null && e.intHomeScore !== "";
-      out.push({ sport, comp: comp(e.strLeague), date, time: played ? undefined : time,
-        opp: home ? e.strAwayTeam : e.strHomeTeam, home,
-        score: played ? (home ? `${e.intHomeScore}-${e.intAwayScore}` : `${e.intAwayScore}-${e.intHomeScore}`) : undefined });
-    }
-  }
-  return out;
-}
-
 const fb = [], fbErr = [];
-for (const [name, fn] of [["futbol", fbFootball], ["euroleague", fbEuroleague],
-  ["bsl", () => fbSportsDB(4475, "Basketbol", "Fenerbah", 34)], ["voleybol", () => fbSportsDB(4543, "Voleybol", "Fenerbah", 30)]]) {
+fb.push(...(data.fbFixed || [])); // BSL ve Efeler Ligi: data.js'te sabit fikstür
+for (const [name, fn] of [["futbol", fbFootball], ["euroleague", fbEuroleague]]) {
   try { const r = await fn(); fb.push(...r); console.log(`Fenerbahçe ${name}: ${r.length} maç`); }
   catch (e) { fbErr.push(name); console.warn(`Fenerbahçe ${name} alınamadı:`, e.message); }
 }

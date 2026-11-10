@@ -20,9 +20,10 @@ Emir'in kişisel kontrol paneli (Boğaziçi Bilgisayar Müh. 2. sınıf). Kullan
 - `curriculum[]` mezuniyet yolu tablosu (status: passed | taking | remaining | elective). Akademik takvim `akademiktakvim.bogazici.edu.tr/tr/json?type=4` (JSON) kaynağından.
 - Uydurma veri ekleme; bilinmeyen alanı boş bırak. "Örnek görünüm" verisi `index.html` içindeki `DEMO()`'dadır ve kaydedilmez.
 - `gcal[]`, `moodle[]`, `fb[]`, `sync`, `built` build sırasında üretilir; elle yazma.
-- Fenerbahçe (`fb[]`, -21…+120 gün): futbol ESPN (`soccer/all/teams/436/schedule`), EuroLeague resmi API (`teamCode=ULK`),
-  Basketbol Süper Ligi (4475) ve Efeler Ligi (4543) TheSportsDB ücretsiz anahtar `123` ile tur tur (istek sınırı: aralarına 2,2 sn).
-  Kadın voleybolu (Sultanlar Ligi) açık kaynaklarda yok.
+- Fenerbahçe (`fb[]`, -21…+120 gün): futbol ESPN (`soccer/all/teams/436/schedule`) ve EuroLeague resmi API (`teamCode=ULK`) build'de otomatik.
+  Basketbol Süper Ligi ve Efeler Ligi `data.js` → `fbFixed[]` içinde sabit (TheSportsDB'den bir kez alındı; canlı çekim istek sınırı yüzünden çok yavaştı).
+  Her maçta `logo` (rakip arması URL'si) var. Kadın voleybolu (Sultanlar Ligi) açık kaynaklarda yok.
+- Logolar: şirketler/bağlantılar Google favicon servisi (`domain` alanı ya da URL'nin alan adı), okul logosu bogazici.edu.tr favicon'u. Yüklenmezse harf rozeti.
 - Spotify: `spotify[]` öğesinde `url` yeter; build oEmbed ile adı ve kapağı alır (`img/spotify/<id>.jpg`, depoda yedeği var).
 - Bu ortamda Node fetch proxy kullanmaz: yerel denemede `NODE_USE_ENV_PROXY=1 NODE_EXTRA_CA_CERTS=/root/.ccr/ca-bundle.crt` ekle.
 

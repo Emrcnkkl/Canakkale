@@ -177,6 +177,21 @@ h1{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1.1;l
 .fb-bas{background:#FFED00;color:#0E1E5B}
 .fb-vol{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px #0E1E5B}
 .fbcard{background:linear-gradient(120deg,color-mix(in srgb,#0E1E5B 10%,var(--surface)),var(--surface) 60%)}
+.lgw,.nolg{position:relative;overflow:hidden}
+.lgw img{width:100%;height:100%;object-fit:contain;display:block}
+.fav.lgw{background:#fff;box-shadow:0 0 0 1px var(--line)}
+.fav.lgw img{padding:1px}
+.nolg::after{content:attr(data-l);position:absolute;inset:0;display:grid;place-items:center;font-size:9px;font-weight:700;color:#fff;background:hsl(var(--h) 55% 45%)}
+.fav.lg24{width:26px;height:26px;border-radius:7px;flex:none}
+.fav.lg24.nolg::after{font-size:12px}
+.tlogo{width:26px;height:26px;flex:none;border-radius:6px}
+.tlogo.nolg{border-radius:50%}
+.tlogo.nolg::after{font-size:11px}
+.tlogo.xl{width:38px;height:38px}
+.nextm{display:flex;align-items:center;gap:10px;margin-top:4px}
+.fblogo{width:22px;height:22px;object-fit:contain}
+.brand-row{display:flex;align-items:center;gap:9px}
+.school{width:26px;height:26px;border-radius:6px;background:#fff;padding:2px;box-shadow:0 0 0 1px var(--line)}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12.5px;color:var(--muted);margin-bottom:12px}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .legend .pill{width:14px;height:14px;padding:0}
@@ -237,7 +252,7 @@ td{padding:9px 10px 9px 0;border-top:1px solid var(--line);vertical-align:middle
 </div>
 <div class="app">
   <nav class="side" aria-label="Sekmeler">
-    <div class="brand">Panel<small id="brandSub">Kişisel kontrol paneli</small></div>
+    <div class="brand"><span class="brand-row"><img class="school" id="schoolLogo" src="https://www.google.com/s2/favicons?domain=bogazici.edu.tr&amp;sz=128" alt="" referrerpolicy="no-referrer" onerror="this.remove()">Panel</span><small id="brandSub">Kişisel kontrol paneli</small></div>
     <div class="tabs" role="tablist" id="tabs"></div>
     <div class="sync" id="sync"><span class="dot"></span><span id="syncText">Yükleniyor…</span></div>
   </nav>
@@ -318,6 +333,12 @@ function nextYearly(s){ // MM-DD ya da YYYY-MM-DD → bir sonraki yıl dönümü
   const t=today0(); let d=new Date(t.getFullYear(),+m[1]-1,+m[2]); if(d<t) d=new Date(t.getFullYear()+1,+m[1]-1,+m[2]);
   return ymd(d);
 }
+// Logolar: şirket/okul için Google favicon servisi, takımlar için veri kaynağının logosu. Yüklenemezse harf rozeti kalır.
+const favUrl = d => d? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(d)}&sz=64` : "";
+const hostOf = u => { try { return new URL(u).hostname.replace(/^www\./,""); } catch(_) { return ""; } };
+const logo = (src, name, cls="fav") => src
+  ? `<span class="${cls} lgw" style="--h:${hue(name)}" data-l="${esc((name||"?")[0].toUpperCase())}"><img src="${esc(src)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add('nolg');this.remove()"></span>`
+  : `<span class="${cls} nolg" style="--h:${hue(name)}" data-l="${esc((name||"?")[0].toUpperCase())}"></span>`;
 const bar = (p,cls="") => `<div class="bar ${cls}"><i style="width:${p.toFixed(1)}%"></i></div>`;
 const empty = (txt, ex) => `<div class="empty">${txt}${ex?`<q>${esc(ex)}</q>`:""}</div>`;
 const card = (cls,title,body,meta="") => `<div class="card ${cls}"><h2>${title}${meta?`<span class="meta">${meta}</span>`:""}</h2>${body}</div>`;
@@ -365,7 +386,7 @@ function renderToday(){
     : empty("Önümüzdeki 3 haftada sınav, teslim ya da önemli bir gün yok.");
   const tiles = D.spotify.length? `<div class="tiles">${D.spotify.map(s=>`<a class="tile" href="${url(s.url)}" target="_blank" rel="noopener" title="${esc(s.title)} — Spotify'da aç">${s.cover?`<img class="cover" src="${esc(s.cover)}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'cover ph',style:'--h:${hue(s.title)}'}))">`:`<span class="cover ph" style="--h:${hue(s.title)}"></span>`}<span class="tx"><b>${esc(s.title)}</b><span>${esc(s.subtitle||"Çalma listesi")}</span></span><span class="play"><svg viewBox="0 0 12 12"><path d="M2 1l9 5-9 5z"/></svg></span></a>`).join("")}</div>`
     : empty("Hızlı çal listen boş. Spotify'da çalma listesinde Paylaş → Bağlantıyı kopyala ile linki bana gönder.");
-  const links = D.links.length? `<div class="links">${D.links.map(l=>`<a href="${url(l.url)}" target="_blank" rel="noopener"><span class="fav" style="--h:${hue(l.title)}">${esc((l.title||"?")[0].toUpperCase())}</span>${esc(l.title)}</a>`).join("")}</div>` : empty("Bağlantı yok.");
+  const links = D.links.length? `<div class="links">${D.links.map(l=>`<a href="${url(l.url)}" target="_blank" rel="noopener">${logo(favUrl(l.domain||hostOf(l.url)),l.title)}${esc(l.title)}</a>`).join("")}</div>` : empty("Bağlantı yok.");
   // küçük durum özetleri
   const reading = D.books.filter(b=>b.status==="okuyorum");
   const watching = D.series.filter(s=>s.status==="izliyorum");
@@ -397,21 +418,21 @@ const SPORT={Futbol:"fb-fut",Basketbol:"fb-bas",Voleybol:"fb-vol"};
 function fbResult(m){ if(!m.score) return ""; const [a,b]=m.score.split("-").map(Number); if(isNaN(a)||isNaN(b)) return "";
   const r=a>b?["G","good"]:a<b?["M","crit"]:["B","warn"]; return `<span class="chip ${r[1]}" title="${r[0]==="G"?"Galibiyet":r[0]==="M"?"Mağlubiyet":"Beraberlik"}">${r[0]} ${esc(m.score)}</span>`; }
 function fbRow(m,showDate=true){
-  if(!showDate) return `<div class="row"><span class="chip sp sm ${SPORT[m.sport]||""}" title="${esc(m.sport)}">${esc(m.sport[0])}</span><div class="main"><div class="t">${esc(m.opp)}</div><div class="d">${esc(fmtD(m.date,{day:"numeric",month:"short"}))} · ${esc(m.comp)} · ${m.home?"İç saha":"Deplasman"}</div></div>${fbResult(m)}</div>`;
-  return `<div class="row"><span class="chip sp ${SPORT[m.sport]||""}">${esc(m.sport)}</span>${showDate?`<span class="mono" style="width:112px;flex:none;font-size:12.5px">${esc(fmtD(m.date,{day:"numeric",month:"short",weekday:"short"}))}${m.time?" "+esc(m.time):""}</span>`:""}<div class="main"><div class="t">${m.home?`Fenerbahçe – ${esc(m.opp)}`:`${esc(m.opp)} – Fenerbahçe`}</div><div class="d">${esc(m.comp)} · ${m.home?"İç saha":"Deplasman"}</div></div>${m.score?fbResult(m):countdown(daysUntil(m.date))}</div>`;
+  if(!showDate) return `<div class="row"><span class="chip sp sm ${SPORT[m.sport]||""}" title="${esc(m.sport)}">${esc(m.sport[0])}</span>${logo(m.logo,m.opp,"tlogo")}<div class="main"><div class="t">${esc(m.opp)}</div><div class="d">${esc(fmtD(m.date,{day:"numeric",month:"short"}))} · ${esc(m.comp)} · ${m.home?"İç saha":"Deplasman"}</div></div>${fbResult(m)}</div>`;
+  return `<div class="row"><span class="chip sp ${SPORT[m.sport]||""}">${esc(m.sport)}</span>${showDate?`<span class="mono" style="width:112px;flex:none;font-size:12.5px">${esc(fmtD(m.date,{day:"numeric",month:"short",weekday:"short"}))}${m.time?" "+esc(m.time):""}</span>`:""}${logo(m.logo,m.opp,"tlogo")}<div class="main"><div class="t">${m.home?`Fenerbahçe – ${esc(m.opp)}`:`${esc(m.opp)} – Fenerbahçe`}</div><div class="d">${esc(m.comp)} · ${m.home?"İç saha":"Deplasman"}</div></div>${m.score?fbResult(m):countdown(daysUntil(m.date))}</div>`;
 }
 let fbFilter="Tümü";
 function renderFB(){
   const all=D.fb, f=fbFilter==="Tümü"?all:all.filter(m=>m.sport===fbFilter);
   const up=f.filter(m=>!m.score&&daysUntil(m.date)>=0), past=f.filter(m=>m.score).slice(-8).reverse();
   const nextBy=["Futbol","Basketbol","Voleybol"].map(sp=>[sp,all.find(m=>m.sport===sp&&!m.score&&daysUntil(m.date)>=0)]);
-  const kp=`<div class="kpis">${nextBy.map(([sp,m])=>`<div><div class="label">${sp} · sıradaki</div>${m?`<div class="big" style="font-size:20px">${esc(m.opp)}</div><div class="d" style="font-size:12.5px;color:var(--muted)">${esc(fmtD(m.date,{day:"numeric",month:"long",weekday:"long"}))}${m.time?" · "+esc(m.time):""} · ${m.home?"İç saha":"Deplasman"}</div>`:`<div class="d" style="color:var(--muted)">Maç bilgisi yok</div>`}</div>`).join("")}</div>`;
+  const kp=`<div class="kpis">${nextBy.map(([sp,m])=>`<div><div class="label">${sp} · sıradaki</div>${m?`<div class="nextm">${logo(m.logo,m.opp,"tlogo xl")}<div class="big" style="font-size:20px">${esc(m.opp)}</div></div><div class="d" style="font-size:12.5px;color:var(--muted)">${esc(fmtD(m.date,{day:"numeric",month:"long",weekday:"long"}))}${m.time?" · "+esc(m.time):""} · ${m.home?"İç saha":"Deplasman"}</div>`:`<div class="d" style="color:var(--muted)">Maç bilgisi yok</div>`}</div>`).join("")}</div>`;
   let lastM="", upL="";
   const upMore=Math.max(0,up.length-30);
   up.slice(0,30).forEach(m=>{const mm=m.date.slice(0,7); if(mm!==lastM){ upL+=`<div class="label" style="margin:${lastM?"14px":"0"} 0 2px">${esc(monthName(mm))}</div>`; lastM=mm;} upL+=fbRow(m);});
   const seg=`<div class="seg" id="fbseg">${["Tümü","Futbol","Basketbol","Voleybol"].map(x=>`<button aria-pressed="${fbFilter===x}" data-v="${x}">${x}</button>`).join("")}</div>`;
   document.getElementById("v-fb").innerHTML = all.length? `<div class="grid">
-    ${card("s12 fbcard","Sıradaki maçlar",kp)}
+    ${card("s12 fbcard",`<img class="fblogo" src="https://a.espncdn.com/i/teamlogos/soccer/500/436.png" alt="" onerror="this.remove()">Sıradaki maçlar`,kp)}
     ${card("s7",`Fikstür`,seg+(up.length?`<div class="list">${upL}</div>${upMore?`<div class="d" style="margin-top:10px;font-size:12px;color:var(--muted)">+${upMore} maç daha</div>`:""}`:empty("Bu filtrede yaklaşan maç yok.")),"Türkiye saati")}
     ${card("s5","Son sonuçlar",past.length?`<div class="list">${past.map(m=>fbRow(m,false)).join("")}</div>`:empty("Sonuç yok."))}
   </div>` : `<div class="card">${empty("Maç takvimi henüz yüklenmedi. Site her 3 saatte bir güncellenir.")}</div>`;
@@ -603,7 +624,7 @@ function renderFinance(){
       ${cs.length?`<div class="label" style="margin-bottom:4px">Kategoriye göre</div>${cs.map(([k,v])=>`<div class="catrow"><span>${esc(k)}</span>${bar(pct(v,mx))}<span class="mono" style="text-align:right">${tl(v)}</span></div>`).join("")}`:""}`;
   } else monthBody = empty("Bu ayın gelir ve giderleri girilmedi.","Kasım: burs 4.000, harçlık 6.000 · kira 3.500, yemek 2.800, ulaşım 900, kitap 450");
   const subs=[...D.subscriptions].map(s=>({...s,nx:nextRenew(s)})).sort((a,b)=>(a.nx||"9").localeCompare(b.nx||"9"));
-  const subsL = subs.length? `<div class="list">${subs.map(s=>`<div class="row"><span class="fav" style="--h:${hue(s.name)}">${esc((s.name||"?")[0].toUpperCase())}</span><div class="main"><div class="t">${esc(s.name)}</div><div class="d">${esc(s.note||"")}${s.note?" · ":""}${s.cycle==="yillik"?"Yıllık":"Aylık"}${s.nx?" · yenileme "+esc(fmtD(s.nx)):" · yenileme günü ?"}</div></div>${s.nx?countdown(daysUntil(s.nx)):""}<span class="mono">${s.amount!=null?tl(s.amount):`<span style="color:var(--muted)">tutar ?</span>`}</span></div>`).join("")}</div>`
+  const subsL = subs.length? `<div class="list">${subs.map(s=>`<div class="row">${logo(favUrl(s.domain||(String(s.name||"").toLowerCase().replace(/[^a-z0-9]/g,"")+".com")),s.name,"fav lg24")}<div class="main"><div class="t">${esc(s.name)}</div><div class="d">${esc(s.note||"")}${s.note?" · ":""}${s.cycle==="yillik"?"Yıllık":"Aylık"}${s.nx?" · yenileme "+esc(fmtD(s.nx)):" · yenileme günü ?"}</div></div>${s.nx?countdown(daysUntil(s.nx)):""}<span class="mono">${s.amount!=null?tl(s.amount):`<span style="color:var(--muted)">tutar ?</span>`}</span></div>`).join("")}</div>`
     : empty("Abonelik yok.","Spotify Öğrenci 39 ₺ her ayın 5'i · Netflix 229 ₺ her ayın 18'i");
   const sav=D.savings;
   const savL = sav.length? `<div class="list">${sav.map(s=>{const p=pct(+s.current||0,+s.target||0);return `<div class="row"><div class="main"><div class="t">${esc(s.title)}</div><div style="margin-top:6px">${bar(p,p>=100?"good":"mark")}</div><div class="d mono" style="margin-top:3px">${tl(s.current)} / ${tl(s.target)}${s.deadline?" · "+esc(fmtD(s.deadline,{month:"long",year:"numeric"})):""}</div></div><span class="big" style="font-size:18px">${Math.round(p)}%</span></div>`;}).join("")}</div>`
