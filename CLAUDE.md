@@ -33,6 +33,9 @@ Emir'in kişisel kontrol paneli (Boğaziçi Bilgisayar Müh. 2. sınıf). Kullan
 - Sınav hazırlığı (Okul): derste `syllabus [{ch, title, items: ["…" | {t, k:"concept"|"lab"}]}]`, sınavda `covers [ch…]`, isteğe bağlı `skip [k…]`, `coversNote`, `weight`.
   Konu kimliği `DERS:ch-sıra` (1'den). Kullanıcı "şunu çalıştım" derse `studyDone[]`'a ekle (her cihazda); sitedeki tıklamalar `localStorage panel.study` (cihaza özel, veriyi geçersiz kılar).
   Derste ayrıca `teacher, office, email, assistants, book, grading, notes[]` gösterilir.
+- piyasam kutusu (Bugün): kullanıcının ekonomi/finans sitesi piyasam (eski quant-bot, https://emrcnkkl.github.io/quant-bot/) verisini tarayıcıdan okur
+  (`markets.json, signals.json, live.json, news.json`; GitHub Pages CORS açık, 10 dk `localStorage panel.pm`): 5 piyasa (`PM_SYMS`), BIST50 Sinyal
+  sayıları ve bugünkü değişimler, canlı model portföy, piyasa genişliği, son 3 haber.
 - Finans: `settings.monthlyBudget` her ay varsayılan bütçe; abonelikler (aylık karşılığı) giderlere otomatik eklenir (`monthExp`).
 - `curriculum[]` status'ta `failed` (kırmızı) ve `grade` (harf notu) da olabilir; `settings.advisor`, `advisorEmail`.
 - Spotify: `spotify[]` öğesinde `url` yeter; build oEmbed ile adı ve kapağı alır (`img/spotify/<id>.jpg`, depoda yedeği var).

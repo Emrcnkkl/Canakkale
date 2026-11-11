@@ -423,6 +423,49 @@ tbody tr:hover td{background:color-mix(in srgb,var(--surface-2) 70%,transparent)
 .socl{width:18px;height:18px;border-radius:5px}
 .socl.nolg::after{font-size:9px}
 .socl.lgw{background:transparent}
+/* ---------- piyasam ---------- */
+.pmcard h2::before{display:none}
+.pm-wm{font-family:var(--f-display);font-weight:700;font-size:19px;letter-spacing:-.02em}
+.pm-wm b{background:linear-gradient(120deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.pm-mk{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.pm-t{position:relative;display:flex;flex-direction:column;gap:2px;padding:12px 12px 34px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);text-decoration:none;overflow:hidden;min-width:0;transition:border-color .15s}
+.pm-t:hover{border-color:var(--line-strong)}
+.pm-n{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pm-t b{font-size:16px;font-weight:600;white-space:nowrap}
+.pm-c{font:600 11.5px var(--f-mono)}
+.pos{color:var(--good)} .neg{color:var(--crit)}
+.spk{position:absolute;left:0;right:0;bottom:0;width:100%;height:30px}
+.spk .l{fill:none;stroke-width:1.6;vector-effect:non-scaling-stroke}
+.spk.up .l{stroke:var(--good)} .spk.down .l{stroke:var(--crit)}
+.spk .a{opacity:.12} .spk.up .a{fill:var(--good)} .spk.down .a{fill:var(--crit)}
+.pm-row{display:grid;grid-template-columns:1.1fr 1fr 1.4fr;gap:10px;margin-top:10px}
+.pm-box{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--surface-2);min-width:0}
+.pm-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:12px;font-weight:600;margin-bottom:8px}
+.pm-s{font-size:11.5px;color:var(--muted);font-weight:500}
+.pm-cnt{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+.pm-cnt span{display:flex;align-items:baseline;justify-content:center;gap:5px;padding:7px 0;border-radius:9px;font-size:11px;font-weight:700;letter-spacing:.06em}
+.pm-cnt b{font-family:var(--f-display);font-size:18px;letter-spacing:-.02em}
+.pm-cnt .al{background:var(--good-soft);color:var(--good)} .pm-cnt .tut{background:var(--surface-solid);color:var(--muted);border:1px solid var(--line)} .pm-cnt .sat{background:var(--crit-soft);color:var(--crit)}
+.pm-ch{display:flex;flex-wrap:wrap;gap:5px}
+.pmc{display:inline-flex;align-items:center;gap:3px;font:600 11px var(--f-mono);padding:3px 7px;border-radius:6px;border:1px solid var(--line);background:var(--surface-solid)}
+.pmc i{font-style:normal}
+.pmc.to-AL{color:var(--good);border-color:color-mix(in srgb,var(--good) 40%,transparent)}
+.pmc.to-SAT{color:var(--crit);border-color:color-mix(in srgb,var(--crit) 40%,transparent)}
+.pmc.to-TUT{color:var(--muted)} .pmc.more{color:var(--muted)}
+.pm-note{margin-top:8px;font-size:11.5px;color:var(--warn)}
+.pm-pf{display:flex;align-items:baseline;gap:10px}
+.pm-pf b{font-family:var(--f-display);font-size:22px}
+.pm-pf span{font:600 12.5px var(--f-mono)}
+.pm-br{display:flex;height:7px;border-radius:7px;overflow:hidden;gap:2px;margin:2px 0 6px}
+.pm-br .u{background:var(--good)} .pm-br .n{background:var(--line-strong)} .pm-br .d{background:var(--crit)}
+.pm-nw{display:flex;flex-direction:column}
+.pm-nw a{display:flex;flex-direction:column;gap:2px;padding:7px 0;border-top:1px solid var(--line);text-decoration:none}
+.pm-nw a:first-child{border-top:0;padding-top:0}
+.pm-nw a span{font-size:13px;font-weight:500;line-height:1.35}
+.pm-nw a:hover span{color:var(--accent-2)}
+.pm-nw small{font-size:11px;color:var(--muted)}
+@media (max-width:1180px){ .pm-mk{grid-template-columns:repeat(3,minmax(0,1fr))} .pm-row{grid-template-columns:1fr 1fr} .pm-row>.pm-box:last-child{grid-column:1/-1} }
+@media (max-width:600px){ .pm-mk{grid-template-columns:repeat(2,minmax(0,1fr))} .pm-mk>.pm-t:last-child:nth-child(odd){grid-column:1/-1} .pm-row{grid-template-columns:1fr} }
 /* ---------- Sınav hazırlığı ---------- */
 #prepBody{display:flex;flex-direction:column;gap:10px}
 .prep{border:1px solid var(--line);border-radius:14px;background:var(--surface-2);overflow:hidden}
@@ -781,6 +824,7 @@ function renderToday(){
     ${card("s6","Devam edenler",nowBits?`<div class="list">${nowBits}</div>`:empty("Okuduğun kitap, izlediğin dizi ya da süren bir eğitim yok."))}
     ${card("s6","Bağlantılar",links)}
     ${card("s12","Bu hafta takvimin",gBody,"Google Takvim")}
+    ${card("s12 pmcard",`<span class="pm-wm">piyasa<b>m</b></span>`,pmBody(),`<a class="lnk" href="${PM_URL}" target="_blank" rel="noopener">Siteye git ↗</a>`)}
     ${D.fb.length?card("s12","Fenerbahçe",`<div class="list">${D.fb.filter(m=>!m.score&&daysUntil(m.date)>=0).slice(0,5).map(m=>fbRow(m)).join("")}</div>`,`<a class="lnk" href="#fb">Tüm fikstür</a>`):""}
   </div>`;
   const urgent = up.filter(i=>daysUntil(i.date)<=3 && (i.kind!=="Takvim")).length;
@@ -816,6 +860,50 @@ function renderFB(){
   </div>` : `<div class="card">${empty("Maç takvimi henüz yüklenmedi. Site her 3 saatte bir güncellenir.")}</div>`;
 }
 document.getElementById("v-fb").addEventListener("click",e=>{const b=e.target.closest("#fbseg button"); if(!b) return; fbFilter=b.dataset.v; renderFB();});
+
+/* ---------- piyasam kutusu (emrcnkkl.github.io/quant-bot verisi; 10 dk önbellek) ---------- */
+const PM_URL="https://emrcnkkl.github.io/quant-bot/";
+const PM_SYMS=["XU100.IS","USDTRY=X","EURTRY=X","GRAM","BTC-USD"];
+let PMD=null, pmErr=false;
+async function loadPiyasam(){
+  try{ const c=JSON.parse(localStorage.getItem("panel.pm")||"null"); if(c&&Date.now()-c.t<10*60e3){ PMD=c; schedule(); return; } }catch(_){}
+  const get=f=>fetch(PM_URL+f,{cache:"no-cache"}).then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); });
+  const [mk,sg,lv,nw]=await Promise.allSettled(["markets.json","signals.json","live.json","news.json"].map(get));
+  const d={t:Date.now()};
+  if(mk.status==="fulfilled"){ const items=mk.value.groups.flatMap(g=>g.items); d.mk=PM_SYMS.map(sy=>items.find(i=>i.sym===sy)).filter(Boolean).map(i=>({name:i.name.replace(" / TL",""),last:i.last,chg:i.chg,dec:i.dec,unit:i.unit,spark:(i.spark||[]).slice(-40)})); d.bist=mk.value.bist&&{adv:mk.value.bist.adv,dec:mk.value.bist.dec,unch:mk.value.bist.unch,vol:mk.value.bist.vol_bn}; d.gen=mk.value.generated_at; }
+  if(sg.status==="fulfilled"){ const v=sg.value; d.sig={counts:v.counts,date:v.data_date,blocking:v.regime&&v.regime.blocking,ch:(v.changes||[]).filter(c=>c.date===v.data_date).map(c=>({t:c.ticker,n:c.name,from:c.from,to:c.to}))}; }
+  if(lv.status==="fulfilled"){ const v=lv.value, last=v.points[v.points.length-1]; d.live={value:last.value,ret:(last.value/v.start_value-1)*100,bench:(last.bench/v.start_value-1)*100,since:v.start_date,n:(v.holdings||[]).length}; }
+  if(nw.status==="fulfilled"){ d.news=(nw.value.items||[]).slice(0,3).map(x=>({t:x.title,l:x.link,s:x.src,ts:x.ts})); }
+  pmErr=!d.mk&&!d.sig; if(!pmErr){ PMD=d; try{ localStorage.setItem("panel.pm",JSON.stringify(d)); }catch(_){} }
+  schedule();
+}
+function spark(arr,up){
+  if(!arr||arr.length<2) return "";
+  const lo=Math.min(...arr), hi=Math.max(...arr), r=hi-lo||1, W=100, H=28;
+  const pts=arr.map((v,i)=>`${(i/(arr.length-1)*W).toFixed(1)},${(H-2-(v-lo)/r*(H-4)).toFixed(1)}`);
+  return `<svg class="spk ${up?"up":"down"}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><path class="a" d="M0,${H} L${pts.join(" L")} L${W},${H} Z"/><path class="l" d="M${pts.join(" L")}"/></svg>`;
+}
+const pmNum=(v,dec)=>Number(v).toLocaleString("tr-TR",{minimumFractionDigits:dec,maximumFractionDigits:dec});
+const pmPct=v=>`${v>0?"+":v<0?"−":""}%${Math.abs(v).toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+function pmBody(){
+  if(!PMD) return empty(pmErr? "piyasam verisi şu an alınamadı." : "piyasam verisi yükleniyor…");
+  const d=PMD;
+  const mk=(d.mk||[]).map(i=>`<a class="pm-t" href="${PM_URL}piyasalar.html" target="_blank" rel="noopener"><span class="pm-n">${esc(i.name)}</span><b class="mono">${i.unit==="$"?"$":""}${pmNum(i.last,i.dec>2?2:i.dec)}${i.unit==="₺"?" ₺":""}</b><span class="pm-c ${i.chg>0?"pos":i.chg<0?"neg":""}">${pmPct(i.chg)}</span>${spark(i.spark,i.chg>=0)}</a>`).join("");
+  const sg=d.sig;
+  const sigH = sg? `<div class="pm-box"><div class="pm-h"><span>BIST50 Sinyal</span><a class="lnk" href="${PM_URL}sinyal.html" target="_blank" rel="noopener">Sinyaller</a></div>
+      <div class="pm-cnt"><span class="al"><b>${sg.counts.AL}</b>AL</span><span class="tut"><b>${sg.counts.TUT}</b>TUT</span><span class="sat"><b>${sg.counts.SAT}</b>SAT</span></div>
+      ${sg.ch.length?`<div class="pm-ch">${sg.ch.slice(0,8).map(c=>`<span class="pmc to-${c.to}" title="${esc(c.n)}: ${esc(c.from)} → ${esc(c.to)}">${esc(c.t)}<i>${c.to==="AL"?"↑":c.to==="SAT"?"↓":"→"}</i></span>`).join("")}${sg.ch.length>8?`<span class="pmc more">+${sg.ch.length-8}</span>`:""}</div>`:`<div class="d" style="font-size:12px;color:var(--muted)">Bugün sinyal değişimi yok.</div>`}
+      ${sg.blocking?`<div class="pm-note">Reel faiz filtresi açık: model yeni alım yapmıyor.</div>`:""}</div>` : "";
+  const lv=d.live, b=d.bist;
+  const midH = `<div class="pm-box">${lv?`<div class="pm-h"><span>Canlı model portföy</span><span class="mono pm-s">${esc(fmtD(lv.since,{day:"numeric",month:"short"}))}'dan beri</span></div>
+      <div class="pm-pf"><b class="mono">${pmNum(lv.value,0)} ₺</b><span class="${lv.ret>=0?"pos":"neg"}">${pmPct(lv.ret)}</span></div>
+      <div class="pm-s">BIST karşılaştırma ${pmPct(lv.bench)} · ${lv.n? lv.n+" hisse":"tamamı nakitte"}</div>`:""}
+      ${b?`<div class="pm-h" style="margin-top:12px"><span>Piyasa genişliği</span><span class="mono pm-s">${b.vol!=null?pmNum(b.vol,1)+" mr ₺ hacim":""}</span></div>
+      <div class="pm-br"><i class="u" style="flex:${b.adv}"></i><i class="n" style="flex:${b.unch}"></i><i class="d" style="flex:${b.dec}"></i></div>
+      <div class="pm-s"><span class="pos">${b.adv} yükselen</span> · <span class="neg">${b.dec} düşen</span></div>`:""}</div>`;
+  const nw = d.news&&d.news.length? `<div class="pm-box"><div class="pm-h"><span>Haberler</span><a class="lnk" href="${PM_URL}haberler.html" target="_blank" rel="noopener">Tümü</a></div><div class="pm-nw">${d.news.map(x=>`<a href="${url(x.l)}" target="_blank" rel="noopener"><span>${esc(x.t)}</span><small>${esc(x.s)} · ${new Date(x.ts).toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"})}</small></a>`).join("")}</div></div>` : "";
+  return `<div class="pm-mk">${mk}</div><div class="pm-row">${sigH}${midH}${nw}</div>`;
+}
 
 /* ---------- Hava durumu (Open-Meteo, anahtarsız; 30 dk önbellek) ---------- */
 let WX=null, wxErr=false;
@@ -1298,6 +1386,7 @@ document.addEventListener("keydown",e=>{
 /* ---------- Başlat ---------- */
 renderAll();
 loadWeather(); setInterval(loadWeather, 30*60e3);
+loadPiyasam(); setInterval(loadPiyasam, 10*60e3);
 const syncEl=document.getElementById("sync"), syncTx=document.getElementById("syncText");
 if(window.PANEL_DATA){ syncEl.className="sync ok"; syncTx.textContent = RAW.updated? "Güncellendi: "+fmtD(RAW.updated,{day:"numeric",month:"short",year:"numeric"}) : "Veri yüklendi"; }
 else { syncEl.className="sync err"; syncTx.textContent="Veri bulunamadı"; }
